@@ -24,6 +24,7 @@
           devShells.default = pkgs.mkShell {
             packages = with pkgs; [
               mdbook
+              mdbook-mermaid
             ];
           };
 
@@ -33,7 +34,6 @@
             programs.nixfmt.package = pkgs.nixfmt-rfc-style;
             programs.mdformat.enable = true;
           };
-
         };
     };
 }

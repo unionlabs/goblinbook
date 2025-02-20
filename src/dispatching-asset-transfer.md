@@ -86,7 +86,7 @@ Create a `flake.nix` with the following configuration. This sets up [Deno](https
 Next, create `src/index.ts`. This will contain most of our logic. Add a simple test:
 
 ```typescript
-console.log("hello, world")
+console.log("hello, world");
 ```
 
 Run it with `deno run src/index.ts` to verify your environment works. You should see `hello, world` in your terminal.
@@ -96,22 +96,22 @@ Run it with `deno run src/index.ts` to verify your environment works. You should
 Let's modify `index.ts` to create and fund two wallets. Note: This example hardcodes mnemonics for demonstration purposes. In production, always use proper key management services.
 
 ```typescript
-import { createWalletClient, http } from 'npm:viem'
-import { mnemonicToAccount } from 'npm:@viem/accounts'
-import { sepolia, arbitrumSepolia } from 'npm:viem/chains'
+import { createWalletClient, http } from "npm:viem";
+import { mnemonicToAccount } from "npm:@viem/accounts";
+import { sepolia, arbitrumSepolia } from "npm:viem/chains";
 
 // Create wallet clients
 const sepoliaWallet = createWalletClient({
   account: mnemonicToAccount(mnemonic1),
   chain: sepolia,
-  transport: http()
-})
+  transport: http(),
+});
 
 const arbitrumWallet = createWalletClient({
   account: mnemonicToAccount(mnemonic2),
   chain: arbitrumSepolia,
-  transport: http()
-})
+  transport: http(),
+});
 
 console.log(`Sepolia address: ${sepoliaWallet.account.address}`);
 console.log(`Arbitrum address: ${arbitrumWallet.account.address}`);
@@ -124,18 +124,18 @@ To fund our Sepolia address for contract interactions, we'll use a [faucet](http
 Let's verify our faucet funding by checking the balance:
 
 ```typescript
-import { createPublicClient, http, formatEther } from 'npm:viem'
+import { createPublicClient, http, formatEther } from "npm:viem";
 
 const sepoliaClient = createPublicClient({
   chain: sepolia,
-  transport: http()
-})
+  transport: http(),
+});
 
 const balance = await sepoliaClient.getBalance({
-  address: sepoliaWallet.account.address
-})
+  address: sepoliaWallet.account.address,
+});
 
-console.log(`Sepolia balance: ${formatEther(balance)} ETH (${balance} wei)`)
+console.log(`Sepolia balance: ${formatEther(balance)} ETH (${balance} wei)`);
 ```
 
 We use `formatEther` for human-readable output. The parenthesized value shows the raw balance. We'll discuss sats, decimals, and asset standards later, but note that ETH is stored in wei on-chain (1 ETH = 10^18 wei).
@@ -147,7 +147,7 @@ At this point, we have secured testnet funds and set up a local wallet (though n
 To do the bridge operation, we'll create a [Union](https://docs.union.build/integrations/typescript/#client-initialization) client. We are using the same accounts as used in our wallets.
 
 ```typescript
-import { http, hexToBytes, createMultiUnionClient } from "npm:unionlabs/client"
+import { http, hexToBytes, createMultiUnionClient } from "npm:unionlabs/client";
 
 const unionClient = createMultiUnionClient([
   {
@@ -159,34 +159,36 @@ const unionClient = createMultiUnionClient([
     chainId: "421614",
     transport: http(),
     account: arbitrumWallet.account,
-  }
-])
+  },
+]);
 ```
 
 The denomAddress is the ERC20 address of the asset we want to send. You might notice that regular ETH does not have an address, because it is not an ERC20. To perform the transfer, ETH must be wrapped to WETH:
 
 ```typescript
 // WETH contract address on Sepolia
-const WETH_ADDRESS = '0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9'
+const WETH_ADDRESS = "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9";
 
 // WETH ABI - we only need the deposit function for wrapping
-const WETH_ABI = [{
-  name: 'deposit',
-  type: 'function',
-  stateMutability: 'payable',
-  inputs: [],
-  outputs: []
-}] as const
+const WETH_ABI = [
+  {
+    name: "deposit",
+    type: "function",
+    stateMutability: "payable",
+    inputs: [],
+    outputs: [],
+  },
+] as const;
 
 // Create the wallet client and transaction
 const hash = await sepoliaWallet.writeContract({
   address: WETH_ADDRESS,
   abi: WETH_ABI,
-  functionName: 'deposit',
-  value: parseEther('0.001') // Amount of ETH to wrap
-})
+  functionName: "deposit",
+  value: parseEther("0.001"), // Amount of ETH to wrap
+});
 
-console.log(`Wrapping ETH: ${hash}`)
+console.log(`Wrapping ETH: ${hash}`);
 ```
 
 Next we need to construct the parameters to transfer the asset. We send all of our wrapped ETH, although we could send a different amount too.
@@ -194,18 +196,18 @@ Next we need to construct the parameters to transfer the asset. We send all of o
 <!-- TODO: with zkgm, this is a good section to briefly discuss how fees and filling work -->
 
 ```typescript
-import type { TransferAssetsParameters } from "@unionlabs/client"
+import type { TransferAssetsParameters } from "@unionlabs/client";
 
 const transferPayload = {
-  amount: parseEther('0.001'),
+  amount: parseEther("0.001"),
   autoApprove: true,
   destinationChainId: "421614",
   receiver: arbitrumWallet.account.address,
   denomAddress: WETH_ADDRESS,
-} satisfies TransferAssetsParameters<"421614">
+} satisfies TransferAssetsParameters<"421614">;
 
-const transfer = await unionClient.transferAsset(transferPayload)
-console.info(`Transfer hash: ${transfer.value}`)
+const transfer = await unionClient.transferAsset(transferPayload);
+console.info(`Transfer hash: ${transfer.value}`);
 ```
 
 Once this transaction is included, the transfer is enqueued and will be picked up by a solver. Next we should monitor the transfer progression using an indexer. The easiest solution is \[graphql.union.build\], which is powered by \[`hubble`\]. Later we will endeavour to obtain the data directly from public RPCs as well.
@@ -238,22 +240,22 @@ let query = `
             chain { display_name }
         }
     }
-`
+`;
 
-const response = await fetch('https://graphql.union.build', {
-  method: 'POST',
+const response = await fetch("https://graphql.union.build", {
+  method: "POST",
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   body: JSON.stringify({
     query,
-    variables: {}
-  })
+    variables: {},
+  }),
 });
 
 const data = await response.json();
 
-console.log(data)
+console.log(data);
 ```
 
 Depending on when you run this code, you might not see all transfers.
@@ -267,18 +269,18 @@ We can query Arbitrum for our balance to verify that we received funds:
 <!-- TODO: this example should query ERC20 Balance -->
 
 ```typescript
-import { createPublicClient, http, formatEther } from 'npm:viem'
+import { createPublicClient, http, formatEther } from "npm:viem";
 
 const arbitrumClient = createPublicClient({
   chain: arbitrumSepolia,
-  transport: http()
-})
+  transport: http(),
+});
 
 const balance = await arbitrumClient.getBalance({
-  address: arbitrumWallet.account.address
-})
+  address: arbitrumWallet.account.address,
+});
 
-console.log(`Arbitrum balance: ${formatEther(balance)} ETH (${balance} wei)`)
+console.log(`Arbitrum balance: ${formatEther(balance)} ETH (${balance} wei)`);
 ```
 
 This should now return the amount sent, minus potential fees.

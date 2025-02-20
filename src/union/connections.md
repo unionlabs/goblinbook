@@ -7,7 +7,7 @@ sequenceDiagram
     participant Chain A
     participant Relayer
     participant Chain B
-    
+
     Chain A->>Relayer: ConnectionOpenInit (includes Chain A's info)
     Relayer->>Chain B: Relay ConnectionOpenInit
     Chain B->>Relayer: ConnectionOpenTry (includes Chain B's info)
@@ -16,15 +16,16 @@ sequenceDiagram
     Relayer->>Chain B: Relay ConnectionOpenAck
     Chain B->>Relayer: ConnectionOpenConfirm
     Relayer->>Chain A: Relay ConnectionOpenConfirm
-    
+
     Note over Chain A,Chain B: Connection Established
 ```
 
 During this handshake:
+
 1. Chain A initiates with ConnectionOpenInit, sending its chain-specific parameters
-2. Chain B responds with ConnectionOpenTry, verifying Chain A's data and providing its own
-3. Chain A acknowledges with ConnectionOpenAck, confirming Chain B's information
-4. Chain B finalizes with ConnectionOpenConfirm, establishing the secure connection
+1. Chain B responds with ConnectionOpenTry, verifying Chain A's data and providing its own
+1. Chain A acknowledges with ConnectionOpenAck, confirming Chain B's information
+1. Chain B finalizes with ConnectionOpenConfirm, establishing the secure connection
 
 Once established, this connection can be used for secure cross-chain communication, with both chains able to verify messages using the exchanged parameters and consensus proofs.
 

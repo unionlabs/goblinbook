@@ -1,0 +1,7 @@
+.mermaid {
+  visibility: hidden;
+}
+
+.mermaid[data-processed="true"] {
+  visibility: visible;
+}

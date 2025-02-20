@@ -1,6 +1,6 @@
 # Overview
 
-Before we explore how IBC and Union work, we take a short detour to get acquainted with interoperability in general. 
+Before we explore how IBC and Union work, we take a short detour to get acquainted with interoperability in general.
 
 At its core, interoperability is about relaying data between two smart contracts on different chains, the same way that the internet is used to relay data between two processes on different servers. In our analogy here, a smart contract functions as a standalone process. Building from this abstraction, we realise that a connection really acts as a way for smart contracts to send bytes to each other.
 

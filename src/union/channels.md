@@ -17,20 +17,22 @@ sequenceDiagram
     Chain B->>Chain A: ChanOpenConfirm
 
     Note over Chain A,Chain B: Channel Established
-    
+
     App on Chain A->>Chain A: Send packet
     Chain A->>Chain B: Packet transfer
     Chain B->>App on Chain B: Deliver packet
 ```
 
 Each channel has key properties:
+
 - Ordering: Controls packet delivery (ordered, unordered, or ordered with timeouts)
 - Version: Application-specific string for protocol versioning
 - State: Tracks the channel establishment process
 
 The channel handshake ensures both applications:
+
 1. Agree on the version
-2. Are ready to process packets
-3. Can verify each other's packet commitments
+1. Are ready to process packets
+1. Can verify each other's packet commitments
 
 Multiple channels can exist over a single connection, each serving different applications. For example, a token transfer application and a governance application could each have their own channel while sharing the underlying secure connection. In general, Union multiplexes traffic over connections and only maintains one connection per chain, while operating many different channels.

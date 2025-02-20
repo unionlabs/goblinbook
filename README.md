@@ -1,6 +1,6 @@
 # goblinbook
 
-A comprehensive guide to understanding and building cross-chain infrastructure.
+A comprehensive guide to understanding and building cross-chain infrastructure. Read the book [here](https://unionlabs.github.io/goblinbook).
 
 ## Overview
 
@@ -33,11 +33,13 @@ cd goblinbook
 ```
 
 2. Enter the Nix development environment:
+
 ```bash
 nix develop
 ```
 
 3. Start the mdBook server:
+
 ```bash
 mdbook watch . --open
 ```
@@ -49,11 +51,12 @@ This will launch the book in your default web browser and automatically reload w
 We welcome contributions from the community! Here's how you can help:
 
 1. Fork the repository
-2. Create a new branch for your feature
-3. Make your changes
-4. Submit a pull request
+1. Create a new branch for your feature
+1. Make your changes
+1. Submit a pull request
 
 Please ensure your contributions:
+
 - Follow the existing style and formatting
 - Include appropriate documentation
 - Add tests where applicable
@@ -67,13 +70,14 @@ goblinbook/
 │   ├── SUMMARY.md       # Book structure
 │   ├── ...              # other chapters
 ├── book.toml            # mdBook configuration
-├── theme/              
+├── theme/
 └── README.md
 ```
 
 ## Building and Testing
 
 To build the book locally:
+
 ```bash
 mdbook build
 ```

@@ -8,7 +8,7 @@ sequenceDiagram
     participant Chain A
     participant Chain B
     participant App B
-    
+
     App A->>Chain A: Send Packet
     Note over Chain A: Store Commitment
     Chain A-->>Chain B: Relay Packet + Proof
@@ -20,18 +20,20 @@ sequenceDiagram
 ```
 
 Each packet contains:
+
 - Source channel
 - Destination channel
 - Timeout height or timestamp
 - Data payload
 
 Packet Lifecycle:
+
 1. Application sends data through its channel
-2. Source chain stores a commitment to the packet
-3. Relayer delivers packet and proof to destination
-4. Destination verifies and executes packet
-5. Relayer returns acknowledgment to source
-6. Source chain cleans up the commitment
+1. Source chain stores a commitment to the packet
+1. Relayer delivers packet and proof to destination
+1. Destination verifies and executes packet
+1. Relayer returns acknowledgment to source
+1. Source chain cleans up the commitment
 
 Timeouts prevent packets from being permanently stuck if the destination chain halts or refuses to process them. When a timeout occurs, the source chain reclaims the packet and notifies the sending application.
 

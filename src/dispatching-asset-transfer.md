@@ -85,7 +85,7 @@ Create a `flake.nix` with the following configuration. This sets up [Deno](https
 
 Next, create `src/index.ts`. This will contain most of our logic. Add a simple test:
 
-```typescript 
+```typescript
 console.log("hello, world")
 ```
 
@@ -119,7 +119,7 @@ console.log(`Arbitrum address: ${arbitrumWallet.account.address}`);
 
 Create two variables, `mnemonic1` and `mnemonic2`, each containing a 12-word sentence (space-separated) as a string. Run the script and save your Sepolia address.
 
-To fund our Sepolia address for contract interactions, we'll use a [faucet](https://www.alchemy.com/faucets/ethereum-sepolia). 
+To fund our Sepolia address for contract interactions, we'll use a [faucet](https://www.alchemy.com/faucets/ethereum-sepolia).
 
 Let's verify our faucet funding by checking the balance:
 
@@ -191,6 +191,8 @@ console.log(`Wrapping ETH: ${hash}`)
 
 Next we need to construct the parameters to transfer the asset. We send all of our wrapped ETH, although we could send a different amount too.
 
+<!-- TODO: with zkgm, this is a good section to briefly discuss how fees and filling work -->
+
 ```typescript
 import type { TransferAssetsParameters } from "@unionlabs/client"
 
@@ -206,7 +208,7 @@ const transfer = await unionClient.transferAsset(transferPayload)
 console.info(`Transfer hash: ${transfer.value}`)
 ```
 
-Once this transaction is included, the transfer is enqueued and will be picked up by a solver. Next we should monitor the transfer progression using an indexer. The easiest solution is [graphql.union.build], which is powered by [`hubble`]. Later we will endeavour to obtain the data directly from public RPCs as well.
+Once this transaction is included, the transfer is enqueued and will be picked up by a solver. Next we should monitor the transfer progression using an indexer. The easiest solution is \[graphql.union.build\], which is powered by \[`hubble`\]. Later we will endeavour to obtain the data directly from public RPCs as well.
 
 ## Tracking Transfer Progression
 
@@ -254,7 +256,7 @@ const data = await response.json();
 console.log(data)
 ```
 
-Depending on when you run this code, you might not see all transfers. 
+Depending on when you run this code, you might not see all transfers.
 
 <!-- TASK: adjust the code to loop until all traces are there -->
 
@@ -263,6 +265,7 @@ Once we see the RECV_PACKET event, our funds will be usable on Arbitrum. The tra
 We can query Arbitrum for our balance to verify that we received funds:
 
 <!-- TODO: this example should query ERC20 Balance -->
+
 ```typescript
 import { createPublicClient, http, formatEther } from 'npm:viem'
 
@@ -282,4 +285,4 @@ This should now return the amount sent, minus potential fees.
 
 ## Summary
 
-This was a hands-on way to introduce you to multichain programming. We have ommitted the implementation details of many of the individual steps. You have now experienced the transfer flow that a regular user experiences when interacting through UIs. In the next chapter, we will go deeper into solving, and how orders are filled.
+This was a hands-on way to introduce you to multichain programming. We have ommitted the implementation details of many of the individual steps. You have now experienced the transfer flow that a regular user experiences when interacting through UIs. In the next chapter, we will go deeper into what each trace meant. Later we will write a simple solver, and show orders are filled.

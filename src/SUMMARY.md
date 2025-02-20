@@ -1,8 +1,12 @@
-
 [Foreword](foreword.md)
 [Introduction](introduction.md)
 
 - [Getting Started](./getting-started/getting-started.md)
-    - [Nix](./getting-started/nix.md)
-    - [Rust](./getting-started/rust.md)
+  - [Nix](./getting-started/nix.md)
+  - [Rust](./getting-started/rust.md)
 - [Dispatching an Asset Transfer](./dispatching-asset-transfer.md)
+- [Union](./union/overview.md)
+  - [Connections](./union/connections.md)
+  - [Channels](./union/channels.md)
+  - [Packets](./union/packets.md)
+- [Writing a Solver](./dispatching-asset-transfer.md)

@@ -16,7 +16,7 @@ sequenceDiagram
     Chain B->>App B: Execute Packet
     Note over Chain B: Store Receipt
     Chain B-->>Chain A: Acknowledge + Proof
-    Note over Chain A: Clean Commitment
+    Note over Chain A: Mark Commitment
 ```
 
 Each packet contains:
@@ -129,3 +129,36 @@ Batch({
 ```
 
 Relayers evaluate the batch's cumulative profit, converting gas tokens to USD value. For instance, if the first order yields 5 USD profit and the second costs 1 $GAS, relayers fulfill the packet when the net profit exceeds their threshold. The smart contract uses the relayer's balance for the gas portion, demonstrating open filling functionality.
+
+### Marking Commitments
+
+Union's approach to handling commitments differs from traditional IBC implementations in an important security aspect. While IBC-classic allows commitments to be cleaned up due to unique sequencing, Union's optimistic packet execution model requires a different approach to prevent potential exploits.
+
+#### The Security Challenge
+
+A key security vulnerability could arise if commitments were cleaned (deleted) rather than marked:
+
+1. An attacker could send a packet
+1. Get it acknowledged
+1. Exploit the commitment cleanup to loop this sequence:
+   - Send the same packet again (generating same hash)
+   - Get acknowledgment
+   - Repeat
+
+This attack vector exists because packet hashes can collide when identical packets are sent multiple times, unlike IBC-classic where sequence numbers ensure uniqueness.
+
+#### Solution: Marking Instead of Cleaning
+
+To prevent this attack while maintaining optimistic execution, Union:
+
+1. Keeps all commitments stored instead of cleaning them
+1. Marks fulfilled commitments as "acked" rather than deleting them
+1. Validates against this "acked" status to prevent replay attacks
+
+This approach:
+
+- Prevents the looping vulnerability
+- Only costs about 4k more gas compared to cleaning
+- Maintains security without compromising the optimistic execution model
+
+The gas cost difference is negligible compared to the protocol level advantage that optimistic solving provides.

@@ -8,5 +8,6 @@
   - [Connections](./union/connections.md)
   - [Channels](./union/channels.md)
   - [Packets](./union/packets.md)
+  - [Clients](./union/connections.md)
   - [Open Filling](./union/open-filling.md)
 - [Writing a Solver](./dispatching-asset-transfer.md)

@@ -7,11 +7,11 @@ Clients are modules that track and verify the state of other chains. How they do
 Every IBC client must provide:
 
 1. State tracking of the counterparty chain
-2. Verification of state updates
-3. Proof verification for individual transactions/packets
-4. Misbehavior detection
+1. Verification of state updates
+1. Proof verification for individual transactions/packets
+1. Misbehavior detection
 
-However, the implementation details can vary depending on the execution environment (EVM or Move for example). 
+However, the implementation details can vary depending on the execution environment (EVM or Move for example).
 
 We usually refer to both the code and to the instatiation as a client. The best way to grok this, is to see a client
 as both the ERC20 code implementation, and an actual ERC20 coin. There can be many clients on a chain, and new clients can be trustlessly instatiated after the code has been uploaded.
@@ -42,10 +42,11 @@ The client code implements the verification rules, while each instance enforces 
 Clients must verify proofs that specific transactions or packets were included in the counterparty chain's state. This involves:
 
 1. Verifying the proof format matches the counterparty's tree structure
-2. Checking the proof against the stored commitment root
-3. Validating the claimed data matches the proof
+1. Checking the proof against the stored commitment root
+1. Validating the claimed data matches the proof
 
 For example:
+
 - Tendermint chains use IAVL+ tree proofs
 - Ethereum uses Merkle Patricia proofs
 - Some L2s use their own specialized proof formats
@@ -55,12 +56,12 @@ For example:
 Clients implement rules to detect and handle misbehavior from their counterparty chains. Common types include:
 
 1. **Double signing** - Same height with different state roots
-2. **Invalid state transitions** - Consensus rule violations
-3. **Timeout violations** - Not responding within parameters
+1. **Invalid state transitions** - Consensus rule violations
+1. **Timeout violations** - Not responding within parameters
 
 When misbehavior is detected, clients can:
 
-- Freeze to prevent further packet processing 
+- Freeze to prevent further packet processing
 - Allow governance intervention
 - Implement automatic resolution mechanisms
 

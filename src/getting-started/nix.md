@@ -10,6 +10,8 @@ For example, here is a snippet to query the Union GraphQL API, which requires `g
 
 Don't worry about bloating your system. Once you close the shell, everything that was installed will be gone again.
 
+Here for example, we show how to query for packets using `gq`.
+
 <div class="tab">
   <button class="tablinks" onclick="openTab(event, 'Command')">Command</button>
   <button class="tablinks" onclick="openTab(event, 'Nix')">Nix</button>
@@ -19,24 +21,13 @@ Don't worry about bloating your system. Once you close the shell, everything tha
 
 ```bash
 gq https://graphql.union.build/v1/graphql -q '
-query RecentTransfers {
-  transfers(
-    first: 10
-    orderBy: timestamp
-    orderDirection: desc
-  ) {
-    id
-    timestamp
-    token {
-      symbol
-      decimals
-    }
-    from
-    to
-    amount
-    blockNumber
+{
+  v1_ibc_union_packets(limit: 3) {
+    packet_hash
+    packet_send_block_hash
   }
-}'
+}
+'
 ```
 
 </div>

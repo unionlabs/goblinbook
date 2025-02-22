@@ -75,4 +75,6 @@ gq https://graphql.union.build/v1/graphql -q '
 nix shell nixpkgs#nodePackages.graphqurl
 ```
 
+</div>
+
 You will probably see `ucs03-zkgm-0` in the output, which is the multiplexed transfer protocol. Like a swiss-army knife, it works for loads of complex applications. Other common versions are `ics20`, which is used for legacy asset transfers.

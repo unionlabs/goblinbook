@@ -91,6 +91,74 @@ struct FungibleAssetOrder {
 
 This instruction powers the official Union app's bridging functionality. Unlike other bridges, it includes both base and quote information, enabling users to specify desired asset conversions (e.g., USDC to unionUSDC). This design allows `FungibleAssetOrder` to handle non-equivalent asset swaps when solvers provide liquidity.
 
+We can see this structure inside the packets live:
+
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'Command')">Command</button>
+  <button class="tablinks" onclick="openTab(event, 'Nix')">Nix</button>
+</div>
+
+<div id="Command" class="tabcontent">
+
+```bash
+gq https://graphql.union.build/v1/graphql -q '
+{
+  v1_ibc_union_packets(limit: 5) {
+    channel_version
+    data_decoded
+  }
+}
+'
+```
+
+</div>
+
+<div id="Nix" class="tabcontent">
+
+```bash
+nix shell nixpkgs#nodePackages.graphqurl
+```
+
+</div>
+
+The indexer uses the `channel.version` to decode the packet and show what is being transmitted. For `ucs03-zkgm-0`, you should observe something like
+
+```
+{
+  "data": {
+    "v1_ibc_union_packets": [
+      {
+        "channel_version": "ucs03-zkgm-0",
+        "data_decoded": {
+          "path": "0x0",
+          "salt": "0x0e38c523e23e20f200c0a5b679b2691fcec0bbee7cb6ba293078057de61a8a17",
+          "instruction": {
+            "_index": "",
+            "opcode": 3,
+            "operand": {
+              "_type": "FungibleAssetOrder",
+              "sender": "0x756e696f6e3177386d386e33396778653473746b65343466386a6e6d616b396b337561613971686e72653533",
+              "receiver": "0x73746172733177386d386e33396778653473746b65343466386a6e6d616b396b337561613971666334763333",
+              "baseToken": "0x6d756e6f",
+              "baseAmount": "0x64",
+              "quoteToken": "0x7374617273316d3967657664387574676d6e32686b6e6468737937636b6e7734726c7a656e686e636d6c6a6e6c39656373773066757177763871676e6e727471",
+              "quoteAmount": "0x64",
+              "baseTokenName": "muno",
+              "baseTokenPath": "0x0",
+              "baseTokenSymbol": "muno"
+            },
+            "version": 0,
+            "_instruction_hash": "0x90c591e2f19fc9608d5c88667c3149b10c6ea799cdd1a85c191d759df85448ce"
+          }
+        }
+      },
+      ...
+  ]}
+}
+```
+
+Here we can see a packet with a `FungibleAssetOrder`, so we know this is funds being transmitted from one chain to another.
+
 ### Fees
 
 Rather than explicitly defining relayer and gas fees, `FungibleAssetOrder` incentivizes packet processing through the value difference between baseAmount and quoteAmount for equivalent assets:

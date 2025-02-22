@@ -67,4 +67,6 @@ gq https://graphql.union.build/v1/graphql -q '
 nix shell nixpkgs#nodePackages.graphqurl
 ```
 
+</div>
+
 There are uses for multiple connections outside of testing though. Connections may leverage different clients, and thus have different security guarantees. A 'fast' connection could leverage an oracle solution, while the 'slow' connection awaits full finality.

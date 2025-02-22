@@ -77,4 +77,17 @@ nix shell nixpkgs#nodePackages.graphqurl
 
 </div>
 
-You will probably see `ucs03-zkgm-0` in the output, which is the multiplexed transfer protocol. Like a swiss-army knife, it works for loads of complex applications. Other common versions are `ics20`, which is used for legacy asset transfers.
+You will probably see `ucs03-zkgm-0` in the output, which is the multiplexed transfer protocol. Like a swiss-army knife, it works for loads of complex applications. Other common versions are `ics20`, which is used for legacy asset transfers. With multiplexed, we mean that a single channel serves many applications at the same time.
+
+```mermaid
+graph TB
+    B1[Token Bridge] & B2[NFT Bridge] & B3[Governance] --- MC[ucs03-zkgm-0]
+    MC --- Chain3[Chain B]
+    Chain3 --- B4[Token Bridge] & B5[NFT Bridge] & B6[Governance]
+```
+
+In legacy channel configurations, there would be 3 individual channels. Multiplexing offers key advantes:
+
+- Applications do not need to relay their own channels.
+- Smart contract developers can leverage enshrined smart contracts.
+- The channel implementation can use smart batching to limit the amount of packets necessary.

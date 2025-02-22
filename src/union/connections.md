@@ -30,3 +30,41 @@ During this handshake:
 Once established, this connection can be used for secure cross-chain communication, with both chains able to verify messages using the exchanged parameters and consensus proofs.
 
 This connection effectively acts as a socket to read and write bytes between the two chains. Although this is powerful, we ideally want a more structured way to communicate, akin to HTTP. For that we use channels.
+
+## Multiple Connections
+
+Usually the relation between chains and connections is one-on-one, meaning that there only exists one connection between two chains. There is nothing preventing multiple from existing however. You will probably see some duplicates for testing reasons: deploying connections while verifiying the actual production one will work.
+
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'Command')">Fetch Connections</button>
+  <button class="tablinks" onclick="openTab(event, 'Nix')">Nix</button>
+</div>
+
+<div id="Command" class="tabcontent">
+
+```bash
+gq https://graphql.union.build/v1/graphql -q '
+{
+  v1_ibc_union_connections(limit: 30) {
+    source_chain {
+      display_name
+    }
+    destination_chain {
+      display_name
+    }
+    source_connection_id
+    destination_connection_id
+  }
+}
+'
+```
+
+</div>
+
+<div id="Nix" class="tabcontent">
+
+```bash
+nix shell nixpkgs#nodePackages.graphqurl
+```
+
+There are uses for multiple connections outside of testing though. Connections may leverage different clients, and thus have different security guarantees. A 'fast' connection could leverage an oracle solution, while the 'slow' connection awaits full finality.

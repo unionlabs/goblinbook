@@ -74,7 +74,7 @@ Clients are the most complex portion of how IBC works. Implementations depend on
 We can query for current live clients by running:
 
 <div class="tab">
-  <button class="tablinks" onclick="openTab(event, 'Fetch Clients')">Command</button>
+  <button class="tablinks" onclick="openTab(event, 'Command')">Fetch Clients</button>
   <button class="tablinks" onclick="openTab(event, 'Nix')">Nix</button>
 </div>
 

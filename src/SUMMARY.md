@@ -14,3 +14,4 @@
 - [project: Nexus](./dex/overview.md)
   - [Architecture](./dex/architecture.md)
   - [Swaps](./dex/swaps.md)
+  - [Frontend](./dex/frontend.md)

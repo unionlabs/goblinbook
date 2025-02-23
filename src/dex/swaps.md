@@ -4,7 +4,7 @@ Our swaps implementation consists of two main components. (1). Typescript code c
 
 ## Nexus Smart Contract
 
-Our smart contact will have a few functions, but the most important one is the simple `swap` function, which accepts and `Order` and executes it. 
+Our smart contact will have a few functions, but the most important one is the simple `swap` function, which accepts and `Order` and executes it.
 
 ```solidity
 struct Order {
@@ -27,7 +27,7 @@ function swap(Order order) {
     // 1. map destinationChainId to channelId
     // 2. transfer from msg.sender to self
     // 3. create routing instructions
-    // 4. call the union contract 
+    // 4. call the union contract
 }
 ```
 
@@ -153,7 +153,7 @@ Right now our code relies on the fact that the relayer is paid by the price of t
 
 ### Supported Assets
 
-Nexus will now create orders for any asset, which means that we might receive invalid orders which will always time out. Limiting the assets that we accept will prevent these errors from occuring. 
+Nexus will now create orders for any asset, which means that we might receive invalid orders which will always time out. Limiting the assets that we accept will prevent these errors from occuring.
 
 ### Local Swaps
 

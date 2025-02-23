@@ -38,6 +38,7 @@ Now you can run `nix develop` to activate the local environment and use `forge` 
 Next we need to install the Union evm contracts.
 
 ```bash
+forge install OpenZeppelin/openzeppelin-contracts
 forge install unionlabs/union@5f4607a0cba6b8db1991b1d24f08605e9ba8600e
 ```
 
@@ -53,7 +54,7 @@ struct Order {
     bytes receiver,
     address baseToken,
     uint256 baseAmount,
-    bytes calldata quoteToken,
+    bytes    quoteToken,
     uint256 quoteAmount,
     bytes32 salt,
 }

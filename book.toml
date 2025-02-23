@@ -13,5 +13,13 @@ command = "mdbook-mermaid"
 [output]
 
 [output.html]
-additional-css = ["custom.css"]
-additional-js = ["mermaid.min.js", "mermaid-init.js", "tab.js"]
+additional-css = ["static/custom.css"]
+additional-js = [
+  "static/mermaid.min.js",
+  "static/mermaid-init.js",
+  "static/tab.js",
+  "static/solidity.min.js",
+]
+
+[output.html.code.languages.solidity]
+name = "Solidity"

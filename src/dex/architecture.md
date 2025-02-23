@@ -1,6 +1,6 @@
 # Architecture
 
-We will refer to our exchange as `Nexus`, since Nex rhymes with Dex, it is short and memeable. 
+We will refer to our exchange as `Nexus`, since Nex rhymes with Dex, it is short and memeable.
 From a high level, our project will function approximately like so:
 
 ```mermaid
@@ -18,7 +18,7 @@ flowchart LR
     subgraph Data["Indexing Layer"]
         GraphQL(Union GraphQL API)
     end
-    
+
     subgraph Solvers["Solver Layer"]
         Solver(Voyager Plugin)
     end
@@ -28,12 +28,12 @@ flowchart LR
     SourceContract --> |Forward Order| SourceUnion
     SourceUnion --> |Route Order| Solver
     Solver --> |Settle| DestContract
-    
+
     SourceContract -.-> |indexes| GraphQL
     DestContract -.-> |indexes| GraphQL
 ```
 
-We will focus on how to submit orders to `Nexus`, call the Union solidity API, and track order fullfilment. Finally we shall implement a `Voyager` plugin to 
+We will focus on how to submit orders to `Nexus`, call the Union solidity API, and track order fullfilment. Finally we shall implement a `Voyager` plugin to
 specifically solve for our protocol.
 
 ## Requirements
@@ -51,15 +51,15 @@ Each operation will maintain comprehensive historical data tracking user trades,
 
 ## Swaps
 
-For our swaps, we will for now not rely on liquidity pools directly. Instead we will assume that our solver manages inventory efficiently. The solver may 
+For our swaps, we will for now not rely on liquidity pools directly. Instead we will assume that our solver manages inventory efficiently. The solver may
 integrate with DEXes and choose to leverage centralized exchanges too.
 
 ## Bridge
 
-Our bridge functionality is simple: we will allow a user to select what chain to start at, and which chain to end at. 
+Our bridge functionality is simple: we will allow a user to select what chain to start at, and which chain to end at.
 Since we are building a multichain exchange, we will not allow swaps without bridging for now, although that will be relatively trivial to add.
 
 ## Historic data
 
-We will query the Union graphql API for data related to our contracts and users. For now we do not store them in another database, although if 
+We will query the Union graphql API for data related to our contracts and users. For now we do not store them in another database, although if
 we want to do advanced analysis, that'd be the next step.

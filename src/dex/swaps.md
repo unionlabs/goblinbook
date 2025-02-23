@@ -2,6 +2,39 @@
 
 Our swaps implementation consists of two main components. (1). Typescript code calling our exchange contract, which then (2). turns the order into a set of `FungibleAssetOrder`s and submits it to the Union contract. We do not directly call the Union contract, because we want our own interface to provide a nice API for other smart contracts to use, as well as potentially build in governance controls.
 
+## Project Setup
+
+Start by creating a flake.nix. We will be using `foundry` and using our flake to manage the environment.
+
+```nix
+{
+  description = "Project Nexus";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+    foundry.url = "github:shazow/foundry.nix";
+  };
+
+  outputs = { self, nixpkgs, flake-utils, foundry }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [ foundry.overlay ];
+        };
+      in {
+        devShells.default = pkgs.mkShell {
+          buildInputs = [
+            pkgs.foundry-bin  # This provides forge, cast, anvil, etc.
+          ];
+        };
+      });
+}
+```
+
+Now you can run `nix develop` to activate the local environment and use `forge` and other tools. Verify the installation succeeded by running `forge init nexus`.
+
 ## Nexus Smart Contract
 
 Our smart contact will have a few functions, but the most important one is the simple `swap` function, which accepts and `Order` and executes it.

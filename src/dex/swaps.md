@@ -35,6 +35,14 @@ Start by creating a flake.nix. We will be using `foundry` and using our flake to
 
 Now you can run `nix develop` to activate the local environment and use `forge` and other tools. Verify the installation succeeded by running `forge init nexus`.
 
+Next we need to install the Union evm contracts.
+
+```bash
+forge install unionlabs/union@5f4607a0cba6b8db1991b1d24f08605e9ba8600e
+```
+
+You can choose a more recent commit hash as well by navigating to the Union [monorepo](https://github.com/unionlabs/union).
+
 ## Nexus Smart Contract
 
 Our smart contact will have a few functions, but the most important one is the simple `swap` function, which accepts and `Order` and executes it.

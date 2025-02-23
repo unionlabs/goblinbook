@@ -189,6 +189,8 @@ Notice how for the order, we encode a `Batch`. This means that we could actually
 
 ## Extending the Contract
 
+Once you've completed this part of the project, consider adding some additional features yourself, such as unit tests, events, or bigger features. A full codebase of the above code can be found [here](https://github.com/unionlabs/goblinbook/tree/main/projects/nexus). Feel free to clone and tinker around if you got stuck.
+
 ### Relayer Fees
 
 Right now our code relies on the fact that the relayer is paid by the price of the base assets being higher than the quote assets (which means it is a profitable trade for the relayer). If the price delta is too small, relayers will not pick up this order. We could extend the `Batch` to include a relayer tip as well.

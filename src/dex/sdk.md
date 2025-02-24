@@ -29,6 +29,7 @@ For our Javacript side logic, we will extend our flake.nix with the right tools:
             pkgs.foundry-bin  # Provides forge, cast, anvil, etc.
             pkgs.nodejs       # Node.js for JavaScript/TypeScript runtime
             pkgs.nodePackages.typescript  # TypeScript compiler (tsc)
+            pkgs.nodePackages.ts-node
           ];
         };
       });

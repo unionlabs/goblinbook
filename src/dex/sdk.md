@@ -94,7 +94,7 @@ We'll leverage `viem` to interact with our contracts. Depending on your frontend
 npm install viem
 ```
 
-We can now import items from viem and use them. Add the follwoing line to your index.ts.
+We can now import items from viem and use them. Add the following line to your index.ts.
 
 ```typescript
 import { createPublicClient, createWalletClient, http, parseAbi } from "viem";
@@ -104,7 +104,7 @@ Have a look in the [viem](https://github.com/wevm/viem) repository to see what o
 
 ## ABI
 
-We'll want to generate types to explain how to interact with our contract:
+We defined our contract logic already. Next we'll want to generate types to explain how to interact with our contract. We could redefine all the types ourselves, but it is better to parse the ABI:
 
 ```typescript
 const abi = parseAbi([
@@ -120,6 +120,10 @@ const abi = parseAbi([
   "function swap(Order order) external",
 ]);
 ```
+
+Here we copied portion's of our ABI in index.ts. Even better is to actually point it to our contracts and generate bindings. For larger contracts and complex codebases, we recommend doing so.
+
+## Interacting with Nexus
 
 In this example, we will start a swap from Ethereum to other chains, so we will instantiate just a single client. In a real app, we would keep a record of chainIds to clients, and use a different client depending on the source chain.
 
@@ -174,7 +178,83 @@ const txHash = await swap(order);
 console.log({ txHash });
 ```
 
-Since we do not have a relayer running at the moment for our protocol, this will most likely not be processed. In the next section we shall configure a personal Voyager instance and ensure it has liquidity to solve for our protocol.
+Since we do not have a relayer running at the moment for our protocol, this will most likely not be processed. In the next section we shall configure a personal Voyager instance and ensure it has liquidity to solve for our protocol. Currently this call will fail, because we haven't whitelisted any routes yet. We will set that configuration now as well.
+
+We can fetch 'recommended' channels from the API. Here we are looking for channels which use `zkgm`. The returned value shows you all available routes starting from Holesky.
+
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'Command')">Get Routes</button>
+  <button class="tablinks" onclick="openTab(event, 'Nix')">Nix</button>
+</div>
+
+<div id="Command" class="tabcontent">
+
+```bash
+gq https://graphql.union.build/v1/graphql -q '
+{
+  v1_ibc_union_channel_recommendations(where: {source_chain_id: {_eq: "17000"}}) {
+    destination_chain {
+      chain_id
+    }
+    source_chain {
+      chain_id
+    }
+    destination_chain_id
+    destination_channel_id
+    destination_client_id
+    destination_connection_id
+    destination_port_id
+    source_chain_id
+    source_channel_id
+    source_client_id
+    source_connection_id
+    source_port_id
+    status
+    version
+  }
+}
+'
+```
+
+</div>
+
+<div id="Nix" class="tabcontent">
+
+```bash
+nix shell nixpkgs#nodePackages.graphqurl
+```
+
+</div>
+
+We can set the route in Nexus by making a call with our deployer private key, using the `setChannelId` function. We will write a Typescript helperfunction again. First we extend the ABI definition:
+
+```typescript
+const abi = parseAbi([
+  ...,
+  "function setChannelId(uint32 destinationChainId, uint32 channelId) external onlyAdmin",
+]);
+```
+
+And then we define our helper function:
+
+```typescript
+async function setChannelId(destinationChainId: number, channelId: number) {
+  const { request } = await publicClient.simulateContract({
+    address: nexusAddress,
+    abi,
+    functionName: "setChannelId",
+    args: [destinationChainId, channelId],
+  });
+
+  const hash = await walletClient.writeContract(request);
+
+  return hash;
+}
+```
+
+We can call this using our admin private key (update the publicClient) and call the function with the right chainId and channelId to set the route.
+
+Now our swap function will succeed and enqueue a swap.
 
 ## Indexing
 

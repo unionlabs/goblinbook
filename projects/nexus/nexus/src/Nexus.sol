@@ -20,8 +20,14 @@ struct Order {
 contract Nexus is Ownable {
     using ZkgmLib for *; // If it uses function extensions (optional)
 
-    mapping(uint32 => bytes32) public destinationToChannel;
+    mapping(uint32 => uint32) public destinationToChannel;
     IIBCPacket public ibcHandler;
+    
+    // Constructor to set the IBC handler and initialize Ownable
+    constructor(address _ibcHandler) Ownable(msg.sender) {
+        require(_ibcHandler != address(0), "IBC handler address cannot be zero");
+        ibcHandler = IIBCPacket(_ibcHandler);
+    }
 
     function swap(Order order) {
         // 1. Get channel ID for destination chain
@@ -76,7 +82,7 @@ contract Nexus is Ownable {
         );
     }
 
-    function setChannelId(uint32 destinationChainId, bytes32 channelId) external onlyAdmin {
+    function setChannelId(uint32 destinationChainId, uint32 channelId) external onlyAdmin {
         destinationToChannel[destinationChainId] = channelId;
     }
 }

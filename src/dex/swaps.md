@@ -206,7 +206,10 @@ Finally we will deploy our contract to Holesky, to interact directly with Union 
 We can obtain the IBC handler address from Union's [deployment.json](https://github.com/unionlabs/union/blob/main/deployments/deployments.json).
 
 ```bash
-forge create --rpc-url $HOLESKY_RPC_URL --private-key $PRIVATE_KEY src/Nexus.sol:Nexus --constructor-args $IBC_HANDLER
+forge create \
+    --rpc-url $HOLESKY_RPC_URL \
+    --private-key $PRIVATE_KEY \
+    src/Nexus.sol:Nexus --constructor-args $IBC_HANDLER
 ```
 
 This will deploy your contract. You will still need to configure the supported routes. We will do this in the [SDK](./dex/sdk.md) section.

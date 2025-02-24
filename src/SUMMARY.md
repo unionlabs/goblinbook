@@ -15,3 +15,4 @@
   - [Architecture](./dex/architecture.md)
   - [Swaps](./dex/swaps.md)
   - [SDK](./dex/sdk.md)
+- [Resources](./resources.md)

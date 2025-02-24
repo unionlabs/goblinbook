@@ -7,26 +7,36 @@ import "union/evm/contracts/core/04-channel/IBCPacket.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol"; // For onlyOwner
 
+interface IZkgm {
+    function send(
+        uint32 channelId,
+        uint64 timeoutHeight,
+        uint64 timeoutTimestamp,
+        bytes32 salt,
+        Instruction calldata instruction
+    ) external;
+}
+
 struct Order {
-    uint32 destinationChainId,
-    bytes receiver,
-    address baseToken,
-    uint256 baseAmount,
-    bytes quoteToken,
-    uint256 quoteAmount,
-    bytes32 salt,
+    uint32 destinationChainId;
+    bytes receiver;
+    address baseToken;
+    uint256 baseAmount;
+    bytes quoteToken;
+    uint256 quoteAmount;
+    bytes32 salt;
 }
 
 contract Nexus is Ownable {
     using ZkgmLib for *; // If it uses function extensions (optional)
 
     mapping(uint32 => uint32) public destinationToChannel;
-    IIBCPacket public ibcHandler;
-    
-    // Constructor to set the IBC handler and initialize Ownable
-    constructor(address _ibcHandler) Ownable(msg.sender) {
-        require(_ibcHandler != address(0), "IBC handler address cannot be zero");
-        ibcHandler = IIBCPacket(_ibcHandler);
+    IZkgm public zkgm;
+
+    // Constructor to set the zkgm contract and initialize Ownable
+    constructor(address _zkgm) Ownable(msg.sender) {
+        require(_zkgm != address(0), "zkgm address cannot be zero");
+        zkgm = IZkgm(_zkgm);
     }
 
     function swap(Order order) {
@@ -61,24 +71,12 @@ contract Nexus is Ownable {
             )
         });
 
-        ibcHandler.sendPacket(
+        zkgm.send(
             channelId,
             timeoutTimestamp, // Could be current time + some buffer
-            ZkgmLib.encode(
-                ZkgmPacket({
-                    salt: order.salt,
-                    path: 0,
-                    instruction: Instruction({
-                        version: ZkgmLib.INSTR_VERSION_0,
-                        opcode: ZkgmLib.OP_BATCH,
-                        operand: ZkgmLib.encodeBatch(
-                            Batch({
-                                instructions: [instruction]
-                            })
-                        )
-                    })
-                })
-            )
+            0, // Optional block timeout
+            order.salt,
+            instruction
         );
     }
 

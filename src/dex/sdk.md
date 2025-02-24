@@ -49,13 +49,13 @@ Set some sensible values when prompted:
 
 ```
 package name: (nexus) sdk
-version: (1.0.0) 
+version: (1.0.0)
 description: SDK for the Nexus Exchange
-entry point: (index.js) 
-test command: 
-git repository: 
-keywords: 
-author: 
+entry point: (index.js)
+test command:
+git repository:
+keywords:
+author:
 license: (ISC) MIT
 ```
 
@@ -75,7 +75,7 @@ As well as that we edit our package.json to configure Typescript. Extend the scr
 }
 ```
 
-We can now run our Typescript code by running 
+We can now run our Typescript code by running
 
 ```
 npm start
@@ -86,14 +86,21 @@ npm start
 Hello, TypeScript!
 ```
 
-
 ## Dependencies and Tools
 
-We'll leverage `viem` to interact with our contracts. Depending on your frontend framework, you might also want to use `wagmi`
+We'll leverage `viem` to interact with our contracts. Depending on your frontend framework, you might also want to use `wagmi` if you are building a frontend application.
+
+```bash
+npm install viem
+```
+
+We can now import items from viem and use them. Add the follwoing line to your index.ts.
 
 ```typescript
-import { createPublicClient, createWalletClient, http, parseAbi } from 'viem'
+import { createPublicClient, createWalletClient, http, parseAbi } from "viem";
 ```
+
+Have a look in the [viem](https://github.com/wevm/viem) repository to see what other features are available.
 
 ## ABI
 

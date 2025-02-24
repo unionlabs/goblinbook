@@ -9,5 +9,8 @@
     "start": "ts-node src/index.ts"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "viem": "^2.23.5"
+  }
 }

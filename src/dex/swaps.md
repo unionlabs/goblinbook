@@ -152,12 +152,12 @@ function swap(Order calldata order) external {
 To interact with the IBC contract, we will need to store it in our own contract. For now, let's pass it during construction.
 
 ```solidity
-    IIBCPacket public ibcHandler;
+    IZkgm public zkgm;
 
-    // Constructor to set the IBC handler and initialize Ownable
-    constructor(address _ibcHandler) Ownable(msg.sender) {
-        require(_ibcHandler != address(0), "IBC handler address cannot be zero");
-        ibcHandler = IIBCPacket(_ibcHandler);
+    // Constructor to set the zkgm contract and initialize Ownable
+    constructor(address _zkgm) Ownable(msg.sender) {
+        require(_zkgm != address(0), "zkgm address cannot be zero");
+        zkgm = IZkgm(_zkgm);
     }
 ```
 
@@ -175,24 +175,12 @@ function swap(Order calldata order) external {
     ...
 
     // 4. Send packet to Union protocol
-    ibcHandler.sendPacket(
+    zkgm.send(
         channelId,
         timeoutTimestamp, // Could be current time + some buffer
-        ZkgmLib.encode(
-            ZkgmPacket({
-                salt: order.salt,
-                path: 0,
-                instruction: Instruction({
-                    version: ZkgmLib.INSTR_VERSION_0,
-                    opcode: ZkgmLib.OP_BATCH,
-                    operand: ZkgmLib.encodeBatch(
-                        Batch({
-                            instructions: [instruction]
-                        })
-                    )
-                })
-            })
-        )
+        0, // Optional block timeout
+        order.salt,
+        instruction
     );
 }
 ```
@@ -203,7 +191,7 @@ Notice how for the order, we encode a `Batch`. This means that we could actually
 
 Finally we will deploy our contract to Holesky, to interact directly with Union testnet.
 
-We can obtain the IBC handler address from Union's [deployment.json](https://github.com/unionlabs/union/blob/main/deployments/deployments.json).
+We can obtain the zkgm address (called **ucs03**) from Union's [deployment.json](https://github.com/unionlabs/union/blob/main/deployments/deployments.json).
 
 ```bash
 forge create \

@@ -149,6 +149,18 @@ function swap(Order calldata order) external {
 
 ### Submit the Order
 
+To interact with the IBC contract, we will need to store it in our own contract. For now, let's pass it during construction.
+
+```solidity
+    IIBCPacket public ibcHandler;
+
+    // Constructor to set the IBC handler and initialize Ownable
+    constructor(address _ibcHandler) Ownable(msg.sender) {
+        require(_ibcHandler != address(0), "IBC handler address cannot be zero");
+        ibcHandler = IIBCPacket(_ibcHandler);
+    }
+```
+
 When submitting the order, we should provide a `timeoutTimestamp`. If the order isn't completed before the timout, the funds will be refunded. This timeout will ensure that if solvers do not want to handle the order (because of price fluctuations) or if there is an outage on the Union network, the user will still receive their funds.
 
 ```solidity
@@ -186,6 +198,18 @@ function swap(Order calldata order) external {
 ```
 
 Notice how for the order, we encode a `Batch`. This means that we could actually submit multiple orders at the same time, or add additional instructions, such as depositing gas for the user.
+
+## Deployment
+
+Finally we will deploy our contract to Holesky, to interact directly with Union testnet.
+
+We can obtain the IBC handler address from Union's [deployment.json](https://github.com/unionlabs/union/blob/main/deployments/deployments.json).
+
+```bash
+forge create --rpc-url $HOLESKY_RPC_URL --private-key $PRIVATE_KEY src/Nexus.sol:Nexus --constructor-args $IBC_HANDLER
+```
+
+This will deploy your contract. You will still need to configure the supported routes. We will do this in the [SDK](./dex/sdk.md) section.
 
 ## Extending the Contract
 

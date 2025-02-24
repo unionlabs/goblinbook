@@ -25,7 +25,10 @@
       {
         devShells.default = pkgs.mkShell {
           buildInputs = [
-            pkgs.foundry-bin # This provides forge, cast, anvil, etc.
+            pkgs.foundry-bin # Provides forge, cast, anvil, etc.
+            pkgs.nodejs # Node.js for JavaScript/TypeScript runtime
+            pkgs.nodePackages.typescript # TypeScript compiler (tsc)
+            pkgs.nodePackages.ts-node
           ];
         };
       }

@@ -1,12 +1,96 @@
-# Frontend
+# SDK
 
 Even though UI and design are out of scope for this guide, we will still go through interacting with our contract from Typescript. The code can be easily used inside React or Svelte applications.
 
 ## Setup
 
-We'll leverage `viem` to interact with our contracts. Depending on your frontend framework, you might also want to use `wagmi`
+For our Javacript side logic, we will extend our flake.nix with the right tools:
+
+```nix
+{
+  description = "Project Nexus";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+    foundry.url = "github:shazow/foundry.nix";
+  };
+
+  outputs = { self, nixpkgs, flake-utils, foundry }:
+    flake-utils.lib.eachDefaultSystem (system:
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [ foundry.overlay ];
+        };
+      in {
+        devShells.default = pkgs.mkShell {
+          buildInputs = [
+            pkgs.foundry-bin  # Provides forge, cast, anvil, etc.
+            pkgs.nodejs       # Node.js for JavaScript/TypeScript runtime
+            pkgs.nodePackages.typescript  # TypeScript compiler (tsc)
+          ];
+        };
+      });
+}
+```
+
+We can now scaffold our SDK project. Here we use Typescript as it helps us potentially catch more bugs early on.
+
+```bash
+nix develop
+mkdir sdk && cd sdk
+npm init
+tsc --init
+```
+
+Set some sensible values when prompted:
 
 ```
+package name: (nexus) sdk
+version: (1.0.0) 
+description: SDK for the Nexus Exchange
+entry point: (index.js) 
+test command: 
+git repository: 
+keywords: 
+author: 
+license: (ISC) MIT
+```
+
+Next we setup some default file:
+
+```bash
+mkdir src
+echo 'console.log("Hello, TypeScript!");' > src/index.ts
+```
+
+As well as that we edit our package.json to configure Typescript. Extend the script section with a build and start script:
+
+```json
+"scripts": {
+  "build": "tsc",
+  "start": "ts-node src/index.ts",
+}
+```
+
+We can now run our Typescript code by running 
+
+```
+npm start
+
+> sdk@1.0.0 start
+> ts-node src/index.ts
+
+Hello, TypeScript!
+```
+
+
+## Dependencies and Tools
+
+We'll leverage `viem` to interact with our contracts. Depending on your frontend framework, you might also want to use `wagmi`
+
+```typescript
 import { createPublicClient, createWalletClient, http, parseAbi } from 'viem'
 ```
 

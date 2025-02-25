@@ -1,3 +1,4 @@
+[Cover](cover.md)
 [Foreword](foreword.md)
 [Introduction](introduction.md)
 

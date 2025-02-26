@@ -47,4 +47,3 @@ Any good trading tracker should show historic trades. This means that we will wa
         ])
     });
 ```
-

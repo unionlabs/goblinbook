@@ -12,6 +12,7 @@
   - [Clients](./union/clients.md)
   - [Open Filling](./union/open-filling.md)
   - [Relayer](./union/relayer.md)
+  - [Addresses](./union/relayer.md)
 - [project: Nexus](./dex/overview.md)
   - [Architecture](./dex/architecture.md)
   - [Swaps](./dex/swaps.md)

@@ -61,5 +61,4 @@ Since we are building a multichain exchange, we will not allow swaps without bri
 
 ## Historic data
 
-We will query the Union graphql API for data related to our contracts and users. For now we do not store them in another database, although if
-we want to do advanced analysis, that'd be the next step.
+We will query the Union graphql API for data related to our contracts and users. For now we do not store them in another database, although if we want to do advanced analysis, that'd be the next step.

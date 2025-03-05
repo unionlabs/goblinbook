@@ -17,6 +17,7 @@ The human readable part (hrp) differentiates between chains (like `union` or `st
 When querying transfers across multiple chains for address `union1abc...123`, searching for that specific string would miss transfers from the same address on other chains like `stars1abc...xyz`.
 
 Union's SDKs and APIs solve this by supporting searches by:
+
 - `display` style (chain-specific format shown in browsers)
 - `canonical` format (without hrp/chain-specific info)
 

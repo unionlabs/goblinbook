@@ -144,23 +144,52 @@ At this point, we have secured testnet funds and set up a local wallet (though n
 
 ## Performing the Asset Transfer
 
-To do the bridge operation, we'll create a [Union](https://docs.union.build/integrations/typescript/#client-initialization) client. We are using the same accounts as used in our wallets.
+To do the bridge operation, we'll directly interact with the Union contracts through their ABI. We'll use the [SDK](https://www.npmjs.com/package/@unionlabs/sdk) package.
+
+```graphql
+query Ucs03Channels @cached(ttl: 60) {
+  v2_channel_recommendations(
+    where: { _and: [{ version: { _eq: "ucs03-zkgm-0" } }] }
+  ) {
+    source_port_id
+    source_chain_id
+    source_channel_id
+    source_connection_id
+    destination_port_id
+    destination_chain_id
+    destination_channel_id
+    destination_connection_id
+  }
+}
+```
+
+```graphql
+getQuoteAsset
+```
 
 ```typescript
-import { http, hexToBytes, createMultiUnionClient } from "npm:unionlabs/client";
+import { ucs03abi } from "npm:@unionlabs/sdk/evm/abi";
 
-const unionClient = createMultiUnionClient([
-  {
-    chainId: "11155111",
-    transport: http(),
-    account: sepoliaWallet.account,
-  },
-  {
-    chainId: "421614",
-    transport: http(),
-    account: arbitrumWallet.account,
-  },
-]);
+walletClient.writeContract({
+  account: account.address as `0x${string}`,
+  abi: ucs03abi,
+  chain: sepolia,
+  functionName: "transferV2",
+  address: transfer.ucs03address,
+  value: BigInt(0.0080085 * 10 ** 18),
+  args: [
+    sourceChannelId,
+    account.address as `0x${string}`,
+    baseToken,
+    baseAmount,
+    quoteToken,
+    quoteAmount,
+    timeoutHeight,
+    timeoutTimestamp,
+    salt,
+    transfer.wethQuoteToken,
+  ],
+});
 ```
 
 The denomAddress is the ERC20 address of the asset we want to send. You might notice that regular ETH does not have an address, because it is not an ERC20. To perform the transfer, ETH must be wrapped to WETH:
@@ -227,18 +256,17 @@ To get the tracing data, we'll make a [Graphql](https://graphql.org/) query. For
 
 ```typescript
 let query = `
-    query GetTracesByHash @cached(ttl: 1) {
-        v1_traces(
-            where: {
-                initiating_transaction_hash: {
-                    _eq: "${transfer.value}"
-                }
-            }
-        ) {
-            type
-            data
-            chain { display_name }
+    query {
+      v2_transfers(where: {transfer_send_transaction_hash:{_eq: "${transfer.value}"}}) {
+        traces {
+          type
+          height
+          chain { 
+            display_name
+            universal_chain_id
+          }
         }
+      }
     }
 `;
 
@@ -258,7 +286,70 @@ const data = await response.json();
 console.log(data);
 ```
 
-Depending on when you run this code, you might not see all transfers.
+For example, for the transaction hash `0xa7389117b99b7de4dcd71dc2acbe21d42826dd4d35174c72f23c0adb64144863`, we get the following data:
+
+```json
+{
+  "data": {
+    "v2_transfers": [
+      {
+        "traces": [
+          {
+            "type": "PACKET_SEND",
+            "height": 7839514,
+            "chain": {
+              "display_name": "Sepolia",
+              "universal_chain_id": "11155111.sepolia"
+            }
+          },
+          {
+            "type": "PACKET_SEND_LC_UPDATE_L0",
+            "height": null,
+            "chain": {
+              "display_name": "Union Testnet 9",
+              "universal_chain_id": "union-testnet-9.union"
+            }
+          },
+          {
+            "type": "PACKET_RECV",
+            "height": null,
+            "chain": {
+              "display_name": "Union Testnet 9",
+              "universal_chain_id": "union-testnet-9.union"
+            }
+          },
+          {
+            "type": "WRITE_ACK",
+            "height": null,
+            "chain": {
+              "display_name": "Union Testnet 9",
+              "universal_chain_id": "union-testnet-9.union"
+            }
+          },
+          {
+            "type": "WRITE_ACK_LC_UPDATE_L0",
+            "height": null,
+            "chain": {
+              "display_name": "Sepolia",
+              "universal_chain_id": "11155111.sepolia"
+            }
+          },
+          {
+            "type": "PACKET_ACK",
+            "height": null,
+            "chain": {
+              "display_name": "Sepolia",
+              "universal_chain_id": "11155111.sepolia"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+Universal chain IDs are chain identifiers specifically used by Union, which are, as the name implies, universally unique. The reason for deviating from what the chains themselves use, is described [here](./union/chain-ids.md).
 
 <!-- TASK: adjust the code to loop until all traces are there -->
 

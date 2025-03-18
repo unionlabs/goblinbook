@@ -167,8 +167,7 @@ async function main() {
                 }
             }
         }
-    }
-`;
+    }`;
 
   const response = await fetch("https://graphql.union.build", {
     method: "POST",

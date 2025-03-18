@@ -18,6 +18,22 @@
         "type": "github"
       }
     },
+    "mdbook-shiftinclude": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1711792939,
+        "narHash": "sha256-c6rBVeet2wVuW6LFed/TOM1ZevomlzSlSFY4gr5Iv0A=",
+        "owner": "daviddrysdale",
+        "repo": "mdbook-shiftinclude",
+        "rev": "57867deae63b7ea28dfee1d794cf18af60b7f9be",
+        "type": "github"
+      },
+      "original": {
+        "owner": "daviddrysdale",
+        "repo": "mdbook-shiftinclude",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1736012469,
@@ -65,6 +81,7 @@
     "root": {
       "inputs": {
         "flake-parts": "flake-parts",
+        "mdbook-shiftinclude": "mdbook-shiftinclude",
         "nixpkgs": "nixpkgs",
         "treefmt-nix": "treefmt-nix"
       }

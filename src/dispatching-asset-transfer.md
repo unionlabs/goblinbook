@@ -1,5 +1,3 @@
-Here's an edited version that improves clarity and fixes some technical details:
-
 # Dispatching an Asset Transfer
 
 Let's dive into interoperability by performing a complex cross-chain operation programmatically. While this interoperability touches upon several technical concepts like asset standards, altVMs, indexing, light clients, and storage proofs, our main goal is to execute an end-to-end operation and understand the components involved. We'll explore the theoretical foundations in later chapters.
@@ -15,7 +13,7 @@ mkdir asset-dispatcher
 Create a `flake.nix` with the following configuration. This sets up [Deno](https://deno.com/) for your local development environment and adds code formatters (run with `nix fmt`). Enable the development environment by running `nix develop`.
 
 ```nix
-{{ #include ../projects/asset-dispatcher/flake.nix }}
+{{ #shiftinclude  auto:../projects/asset-dispatcher/flake.nix }}
 ```
 
 Next, create `src/index.ts`. This will contain most of our logic. Add a simple test:
@@ -31,9 +29,9 @@ Run it with `deno run src/index.ts` to verify your environment works. You should
 Let's modify `index.ts` to create and fund two wallets. Note: This example hardcodes mnemonics for demonstration purposes. In production, always use proper key management services.
 
 ```typescript
-{{ #include ../projects/asset-dispatcher/src/index.ts:managing-wallets-imports }}
+{{ #shiftinclude  auto:../projects/asset-dispatcher/src/index.ts:managing-wallets-imports }}
 
-{{ #include ../projects/asset-dispatcher/src/index.ts:managing-wallets }}
+{{ #shiftinclude  auto:../projects/asset-dispatcher/src/index.ts:managing-wallets }}
 ```
 
 Create two variables, `mnemonic1` and `mnemonic2`, each containing a 12-word sentence (space-separated) as a string. Run the script and save your addresses. You can use the same mnemonic if you prefer.
@@ -44,9 +42,9 @@ Let's verify our faucet funding by checking the balance:
 create-client
 
 ```typescript
-{{ #include ../projects/asset-dispatcher/src/index.ts:create-client-imports }}
+{{ #shiftinclude  auto:../projects/asset-dispatcher/src/index.ts:create-client-imports }}
 
-{{ #include ../projects/asset-dispatcher/src/index.ts:create-client }}
+{{ #shiftinclude  auto:../projects/asset-dispatcher/src/index.ts:create-client }}
 ```
 
 We use `formatEther` for human-readable output. The parenthesized value shows the raw balance. We'll discuss sats, decimals, and asset standards later, but note that ETH is stored in wei on-chain (1 ETH = 10^18 wei).
@@ -133,9 +131,9 @@ The `quote_token` is deterministically generated depending on the contract addre
 Under the hood, the Union contract will withdraw funds from our account before bridging them to Holesky. This withdrawal is normally not allowed (for security reasons, imagine if smart contracts were allowed to just remove user funds!), so we need to `approve` the Union contract to allow it to withdraw.
 
 ```typescript
-{{ #include ../projects/asset-dispatcher/src/index.ts:approvals-imports }}
+{{ #shiftinclude  auto:../projects/asset-dispatcher/src/index.ts:approvals-imports }}
 
-{{ #include ../projects/asset-dispatcher/src/index.ts:approvals }}
+{{ #shiftinclude  auto:../projects/asset-dispatcher/src/index.ts:approvals }}
 ```
 
 For convenience, we are allowing the contract `MaxUint256`, so that we do not need to do further approvals. From now on, the Union ucs03 contract can withdraw WETH on Sepolia.
@@ -147,15 +145,15 @@ Executing the actual bridge operation seems like quite a lot of lines of code. L
 When we interact with the `send` entrypoint, we submit a program. Union's bridge standard leverages a lightweight, non-Turing complete VM. That way, we can do 1-click swaps, forwards, or other arbitrary logic. The `args` for our call in this case is the `Batch` instruction, which is effectively a list of instructions to execute. Inside the batch, we have two `FungibleAssetOrder`s. The first order is transferring wrapped Eth using a 1:1 ratio (meaning that on the receiving side, the user will receive 100% of the amount). The second order has a 1:0 ratio, meaning that the user receives nothing on the destination side. Effectively, we are 'tipping' the protocol here. An alternative way to ensure this transfer is funded, is altering the ratio of the first transfer. For example, a 100:99 ratio would be a 1% transfer fee.
 
 ```typescript
-{{ #include ../projects/asset-dispatcher/src/index.ts:send-imports }}
+{{ #shiftinclude  auto:../projects/asset-dispatcher/src/index.ts:send-imports }}
 
-{{ #include ../projects/asset-dispatcher/src/index.ts:send }}
+{{ #shiftinclude  auto:../projects/asset-dispatcher/src/index.ts:send }}
 ```
 
 The denomAddress is the ERC20 address of the asset we want to send. You might notice that regular ETH does not have an address, because it is not an ERC20. To perform the transfer, ETH must be wrapped to WETH (optional if you already own WETH):
 
 ```typescript
-{{ #include ../projects/asset-dispatcher/src/index.ts:wrapping }}
+{{ #shiftinclude  auto:../projects/asset-dispatcher/src/index.ts:wrapping }}
 ```
 
 Once this transaction is included, the transfer is enqueued and will be picked up by a solver. Next we should monitor the transfer progression using an indexer. The easiest solution is \[graphql.union.build\], which is powered by \[`hubble`\]. Later we will endeavour to obtain the data directly from public RPCs as well.
@@ -174,7 +172,7 @@ The `PACKET_SEND` was actually us performing the transfer. The other steps are e
 To get the tracing data, we'll make a [Graphql](https://graphql.org/) query. For now we will just use `fetch` calls, but there are many high quality graphql clients around.
 
 ```typescript
-{{ #include ../projects/asset-dispatcher/src/index.ts:query-traces }}
+{{ #shiftinclude  auto:../projects/asset-dispatcher/src/index.ts:query-traces | dedent }}
 ```
 
 For example, for the transaction hash `0xa7389117b99b7de4dcd71dc2acbe21d42826dd4d35174c72f23c0adb64144863`, we get the following data:
@@ -253,9 +251,9 @@ Once we see the `PACKET_RECV` event, our funds will be usable on Holesky. The tr
 We can query Holesky for our balance to verify that we received funds:
 
 ```typescript
-{{ #include ../projects/asset-dispatcher/src/index.ts:verify-balance-imports }}
+{{ #shiftinclude  auto:../projects/asset-dispatcher/src/index.ts:verify-balance-imports }}
 
-{{ #include ../projects/asset-dispatcher/src/index.ts:verify-balance }}
+{{ #shiftinclude  auto:../projects/asset-dispatcher/src/index.ts:verify-balance }}
 ```
 
 This should now return the amount sent in the first `FungibleAssetOrder`.

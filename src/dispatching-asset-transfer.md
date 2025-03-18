@@ -15,72 +15,7 @@ mkdir asset-dispatcher
 Create a `flake.nix` with the following configuration. This sets up [Deno](https://deno.com/) for your local development environment and adds code formatters (run with `nix fmt`). Enable the development environment by running `nix develop`.
 
 ```nix
-{
-  description = "CLI for Asset Dispatching";
-
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-parts.url = "github:hercules-ci/flake-parts";
-    treefmt.url = "github:numtide/treefmt-nix";
-  };
-  outputs =
-    inputs@{
-      self,
-      nixpkgs,
-      flake-parts,
-      treefmt,
-      ...
-    }:
-    flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [
-        treefmt.flakeModule
-      ];
-      systems = [
-        "x86_64-linux"
-        "aarch64-linux"
-        "aarch64-darwin"
-        "x86_64-darwin"
-      ];
-      perSystem =
-        {
-          config,
-          self',
-          inputs',
-          pkgs,
-          system,
-          ...
-        }:
-        {
-          devShells = {
-            default = pkgs.mkShell {
-              buildInputs =
-                [
-                  pkgs.deno
-                  pkgs.supabase-cli
-                ]
-                ++ (pkgs.lib.optionals pkgs.stdenv.isDarwin (with pkgs.darwin.apple_sdk.frameworks; [ Security ]));
-            };
-          };
-          treefmt = {
-            projectRootFile = "flake.nix";
-            programs.nixfmt.enable = pkgs.lib.meta.availableOn pkgs.stdenv.buildPlatform pkgs.nixfmt-rfc-style.compiler;
-            programs.nixfmt.package = pkgs.nixfmt-rfc-style;
-            programs.deno.enable = true;
-            programs.mdformat.enable = true;
-          };
-        };
-    };
-  nixConfig = {
-    extra-substituters = [
-      "https://union.cachix.org/"
-      "https://cache.garnix.io"
-    ];
-    extra-trusted-public-keys = [
-      "union.cachix.org-1:TV9o8jexzNVbM1VNBOq9fu8NK+hL6ZhOyOh0quATy+M="
-      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
-    ];
-  };
-}
+{{ #include ../projects/asset-dispatcher/flake.nix }}
 ```
 
 Next, create `src/index.ts`. This will contain most of our logic. Add a simple test:
@@ -96,25 +31,9 @@ Run it with `deno run src/index.ts` to verify your environment works. You should
 Let's modify `index.ts` to create and fund two wallets. Note: This example hardcodes mnemonics for demonstration purposes. In production, always use proper key management services.
 
 ```typescript
-import { createWalletClient, http } from "npm:viem";
-import { mnemonicToAccount } from "npm:@viem/accounts";
-import { sepolia, holesky } from "npm:viem/chains";
+{{ #include ../projects/asset-dispatcher/src/index.ts:managing-wallets-imports }}
 
-// Create wallet clients
-const sepoliaWallet = createWalletClient({
-  account: mnemonicToAccount(mnemonic1),
-  chain: sepolia,
-  transport: http(),
-});
-
-const holeskyWallet = createWalletClient({
-  account: mnemonicToAccount(mnemonic2),
-  chain: holesky,
-  transport: http(),
-});
-
-console.log(`Sepolia address: ${sepoliaWallet.account.address}`);
-console.log(`Holesky address: ${holeskyWallet.account.address}`);
+{{ #include ../projects/asset-dispatcher/src/index.ts:managing-wallets }}
 ```
 
 Create two variables, `mnemonic1` and `mnemonic2`, each containing a 12-word sentence (space-separated) as a string. Run the script and save your addresses. You can use the same mnemonic if you prefer.
@@ -122,20 +41,12 @@ Create two variables, `mnemonic1` and `mnemonic2`, each containing a 12-word sen
 To fund our Sepolia address for contract interactions, we'll use a [faucet](https://www.alchemy.com/faucets/ethereum-sepolia).
 
 Let's verify our faucet funding by checking the balance:
+create-client
 
 ```typescript
-import { createPublicClient, http, formatEther } from "npm:viem";
+{{ #include ../projects/asset-dispatcher/src/index.ts:create-client-imports }}
 
-const sepoliaClient = createPublicClient({
-  chain: sepolia,
-  transport: http(),
-});
-
-const balance = await sepoliaClient.getBalance({
-  address: sepoliaWallet.account.address,
-});
-
-console.log(`Sepolia balance: ${formatEther(balance)} ETH (${balance} wei)`);
+{{ #include ../projects/asset-dispatcher/src/index.ts:create-client }}
 ```
 
 We use `formatEther` for human-readable output. The parenthesized value shows the raw balance. We'll discuss sats, decimals, and asset standards later, but note that ETH is stored in wei on-chain (1 ETH = 10^18 wei).
@@ -184,24 +95,47 @@ Per chain, we can find the Union contracts [here](https://github.com/unionlabs/u
 Finally we need to obtain the quote token address (the address of the asset on the destination side).
 
 ```graphql
-// TODO will be added by jurraain.
+get_wrapped_transfer_request_details(args:{
+    p_source_universal_chain_id: "ethereum.11155111",
+    p_destination_universal_chain_id: "ethereum.17000",
+    p_base_token: ${WETH_ADDRESS}
+  }) {
+    quote_token
+    source_channel_id
+    destination_channel_id
+    already_exists
+  }
 ```
 
-The address is deterministically generated depending on the contract addresses and channel_ids. If `already_exists` is false, the Union contract on the destination chain will instantiate a new asset, hence why the deterministically derived address algorithm is so important.
+This should return
+
+```
+{
+  "data": {
+    "get_wrapped_transfer_request_details": [
+      {
+        "quote_token": "0x685a6d912eced4bdd441e58f7c84732ceccbd1e4",
+        "source_channel_id": 8,
+        "destination_channel_id": 47,
+        "already_exists": true
+      }
+    ]
+  }
+}
+```
+
+The `source_channel_id` should match the channel from the `v2_channel_recommendations` query.
+
+The `quote_token` is deterministically generated depending on the contract addresses and channel_ids. If `already_exists` is false, the Union contract on the destination chain will instantiate a new asset, hence why the deterministically derived address algorithm is so important.
 
 ## Approvals
 
 Under the hood, the Union contract will withdraw funds from our account before bridging them to Holesky. This withdrawal is normally not allowed (for security reasons, imagine if smart contracts were allowed to just remove user funds!), so we need to `approve` the Union contract to allow it to withdraw.
 
 ```typescript
-import { erc20ABI, MaxUint256 } from "viem";
+{{ #include ../projects/asset-dispatcher/src/index.ts:approvals-imports }}
 
-await writeContract({
-  address: "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9",
-  abi: erc20ABI,
-  functionName: "approve",
-  args: [ucs03address, MaxUint256],
-});
+{{ #include ../projects/asset-dispatcher/src/index.ts:approvals }}
 ```
 
 For convenience, we are allowing the contract `MaxUint256`, so that we do not need to do further approvals. From now on, the Union ucs03 contract can withdraw WETH on Sepolia.
@@ -213,94 +147,15 @@ Executing the actual bridge operation seems like quite a lot of lines of code. L
 When we interact with the `send` entrypoint, we submit a program. Union's bridge standard leverages a lightweight, non-Turing complete VM. That way, we can do 1-click swaps, forwards, or other arbitrary logic. The `args` for our call in this case is the `Batch` instruction, which is effectively a list of instructions to execute. Inside the batch, we have two `FungibleAssetOrder`s. The first order is transferring wrapped Eth using a 1:1 ratio (meaning that on the receiving side, the user will receive 100% of the amount). The second order has a 1:0 ratio, meaning that the user receives nothing on the destination side. Effectively, we are 'tipping' the protocol here. An alternative way to ensure this transfer is funded, is altering the ratio of the first transfer. For example, a 100:99 ratio would be a 1% transfer fee.
 
 ```typescript
-import { Batch, FungibleAssetOrder } from "npm:@unionlabs/sdk/evm/ucs03";
-import { ucs03abi } from "npm:@unionlabs/sdk/evm/abi";
+{{ #include ../projects/asset-dispatcher/src/index.ts:send-imports }}
 
-sepoliaWallet.writeContract({
-  account: sepoliaWallet.account.address as `0x${string}`,
-  abi: ucs03abi,
-  chain: sepolia,
-  functionName: "send",
-  address: ucs03address,
-  args: [
-    // obtained from the graphql Channels query
-    sourceChannelId,
-    // this transfer is timeout out by timestamp, so we set height really high.
-    0,
-    // The actual timeout. It is current time + 2 hours.
-    BigInt(Math.floor(Date.now() / 1000) + 7200),
-    salt,
-    // We're actually enqueuing two transfers, the main transfer, and fee.
-    Batch([
-      // Our main transfer.
-      FungibleAssetOrder([
-        sepoliaWallet.account.address,
-        holeskyWallet.account.address,
-        WETH_ADDRESS,
-        4n,
-        // symbol
-        "WETH",
-        // name
-        "Wrapped Ether",
-        // decimals
-        18,
-        // path
-        0n,
-        // quote token
-        "0x74d5b8eacfeb0dadaaf66403f40e304b3ef968b3",
-        // quote amount
-        4n,
-      ]),
-      // Our fee transfer.
-      FungibleAssetOrder([
-        sepoliaWallet.account.address,
-        holeskyWallet.account.address,
-        WETH_ADDRESS,
-        1n,
-        // symbol
-        "WETH",
-        // name
-        "Wrapped Ether",
-        // decimals
-        18,
-        // path
-        0n,
-        // quote token
-        "0x74d5b8eacfeb0dadaaf66403f40e304b3ef968b3",
-        // quote amount
-        0,
-      ]),
-    ]),
-  ],
-});
+{{ #include ../projects/asset-dispatcher/src/index.ts:send }}
 ```
 
 The denomAddress is the ERC20 address of the asset we want to send. You might notice that regular ETH does not have an address, because it is not an ERC20. To perform the transfer, ETH must be wrapped to WETH (optional if you already own WETH):
 
 ```typescript
-// WETH contract address on Sepolia
-const WETH_ADDRESS = "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9";
-
-// WETH ABI - we only need the deposit function for wrapping
-const WETH_ABI = [
-  {
-    name: "deposit",
-    type: "function",
-    stateMutability: "payable",
-    inputs: [],
-    outputs: [],
-  },
-] as const;
-
-// Create the wallet client and transaction
-const hash = await sepoliaWallet.writeContract({
-  address: WETH_ADDRESS,
-  abi: WETH_ABI,
-  functionName: "deposit",
-  value: parseEther("0.001"), // Amount of ETH to wrap
-});
-
-console.log(`Wrapping ETH: ${hash}`);
+{{ #include ../projects/asset-dispatcher/src/index.ts:wrapping }}
 ```
 
 Once this transaction is included, the transfer is enqueued and will be picked up by a solver. Next we should monitor the transfer progression using an indexer. The easiest solution is \[graphql.union.build\], which is powered by \[`hubble`\]. Later we will endeavour to obtain the data directly from public RPCs as well.
@@ -319,35 +174,7 @@ The `PACKET_SEND` was actually us performing the transfer. The other steps are e
 To get the tracing data, we'll make a [Graphql](https://graphql.org/) query. For now we will just use `fetch` calls, but there are many high quality graphql clients around.
 
 ```typescript
-let query = `
-    query {
-      v2_transfers(where: {transfer_send_transaction_hash:{_eq: "${transfer.value}"}}) {
-        traces {
-          type
-          height
-          chain { 
-            display_name
-            universal_chain_id
-          }
-        }
-      }
-    }
-`;
-
-const response = await fetch("https://graphql.union.build", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    query,
-    variables: {},
-  }),
-});
-
-const data = await response.json();
-
-console.log(data);
+{{ #include ../projects/asset-dispatcher/src/index.ts:query-traces }}
 ```
 
 For example, for the transaction hash `0xa7389117b99b7de4dcd71dc2acbe21d42826dd4d35174c72f23c0adb64144863`, we get the following data:
@@ -426,27 +253,9 @@ Once we see the `PACKET_RECV` event, our funds will be usable on Holesky. The tr
 We can query Holesky for our balance to verify that we received funds:
 
 ```typescript
-import { createPublicClient, http, formatEther } from "npm:viem";
+{{ #include ../projects/asset-dispatcher/src/index.ts:verify-balance-imports }}
 
-const holeskyClient = createPublicClient({
-  chain: holesky,
-  transport: http(),
-});
-
-const erc20Abi = parseAbi([
-  "function balanceOf(address owner) view returns (uint256)",
-]);
-
-const balance = await holeskyClient.readContract({
-  address: tokenAddress,
-  abi: erc20Abi,
-  functionName: "balanceOf",
-  args: [holeskyWallet.account.address],
-});
-
-const formattedBalance = balance / 10n ** BigInt(decimals);
-
-console.log(`Token balance: ${formattedBalance} (${balance})`);
+{{ #include ../projects/asset-dispatcher/src/index.ts:verify-balance }}
 ```
 
 This should now return the amount sent in the first `FungibleAssetOrder`.

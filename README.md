@@ -1,6 +1,6 @@
 # goblinbook
 
-A comprehensive guide to understanding and building cross-chain infrastructure. Read the book [here](https://unionlabs.github.io/goblinbook).
+A comprehensive guide to understanding and building cross-chain infrastructure. Read the book [here](https://unionlabs.github.io/goblinbook/).
 
 ## Overview
 

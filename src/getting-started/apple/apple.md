@@ -1,6 +1,6 @@
 # Apple
 
-Most developers building on Union use macbooks as their main development machine, in combination with lightweight *nix VMs. 
+Most developers building on Union use macbooks as their main development machine, in combination with lightweight \*nix VMs.
 
 When locally developing on macbooks, there's a few things to keep in mind:
 

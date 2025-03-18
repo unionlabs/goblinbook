@@ -1,4 +1,4 @@
-Mke sure to DYOR:
+Make sure to DYOR:
 
 - [docs.union.build](https://docs.union.build)
 - [github.com/unionlabs/union](https://github.com/unionlabs/union)

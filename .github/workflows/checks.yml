@@ -14,4 +14,3 @@ jobs:
       - uses: cachix/install-nix-action@v26
       - name: Run GraphQL query tests
         run: nix develop --command bash -c "./scripts/test-queries.sh"
-

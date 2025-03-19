@@ -7,30 +7,8 @@ Our swaps implementation consists of two main components. (1). Typescript code c
 Start by creating a flake.nix. We will be using `foundry` and using our flake to manage the environment.
 
 ```nix
-{
-  description = "Project Nexus";
-
-  inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
-    foundry.url = "github:shazow/foundry.nix";
-  };
-
-  outputs = { self, nixpkgs, flake-utils, foundry }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = [ foundry.overlay ];
-        };
-      in {
-        devShells.default = pkgs.mkShell {
-          buildInputs = [
-            pkgs.foundry-bin  # This provides forge, cast, anvil, etc.
-          ];
-        };
-      });
-}
+{{ #shiftinclude  auto:../../projects/nexus/flake.nix:swaps-flake-nix }}
+{{ #shiftinclude  auto:../../projects/nexus/flake.nix:swaps-flake-nix-tail }}
 ```
 
 Now you can run `nix develop` to activate the local environment and use `forge` and other tools. Verify the installation succeeded by running `forge init nexus`.
@@ -49,15 +27,7 @@ You can choose a more recent commit hash as well by navigating to the Union [mon
 Our smart contact will have a few functions, but the most important one is the simple `swap` function, which accepts and `Order` and executes it.
 
 ```solidity
-struct Order {
-    uint32 destinationChainId,
-    bytes receiver,
-    address baseToken,
-    uint256 baseAmount,
-    bytes    quoteToken,
-    uint256 quoteAmount,
-    bytes32 salt,
-}
+{{ #shiftinclude  auto:../../projects/nexus/nexus/src/Nexus.sol:order}}
 ```
 
 Our order specifies the `destinationChainId`, which is where the user wants to receive their tokens. The `salt` is added to allow for orders of exactly the same amount and assets to function, since Union hashes orders against replay attacks, we need a way to alter that hash.
@@ -65,12 +35,7 @@ Our order specifies the `destinationChainId`, which is where the user wants to r
 Next our swap function:
 
 ```solidity
-function swap(Order order) {
-    // 1. map destinationChainId to channelId
-    // 2. transfer from msg.sender to self
-    // 3. create routing instructions
-    // 4. call the union contract
-}
+{{ #shiftinclude  auto:../../projects/nexus/nexus/src/Nexus.sol:swap-intro}}
 ```
 
 We need to implement the 4 steps in our example.
@@ -80,13 +45,12 @@ We need to implement the 4 steps in our example.
 First, we need to map destination chain IDs to Union channel IDs. Union uses channels to route orders between chains. We could compute this on the frontend when submitting orders, but we want Nexus to be callable by other smart contracts as well, hence why we store the mapping.
 
 ```solidity
-// Map of destination chain ID to Union channel ID
-mapping(uint32 => bytes32) public destinationToChannel;
+{{ #shiftinclude  auto:../../projects/nexus/nexus/src/Nexus.sol:channel-mapping-storage}}
 
-// Set by admin
-function setChannelId(uint32 destinationChainId, bytes32 channelId) external onlyAdmin {
-    destinationToChannel[destinationChainId] = channelId;
-}
+...
+
+{{ #shiftinclude  auto:../../projects/nexus/nexus/src/Nexus.sol:set-channel-id}}
+
 ```
 
 ### Token Transfer
@@ -94,20 +58,10 @@ function setChannelId(uint32 destinationChainId, bytes32 channelId) external onl
 Next, we need to handle the ERC20 token transfer from user to Nexus contract:
 
 ```solidity
-function swap(Order calldata order) external {
-    // 1. Get channel ID for destination chain
-    bytes32 channelId = destinationToChannel[order.destinationChainId];
-    require(channelId != bytes32(0), "Invalid destination chain");
+{{ #shiftinclude  auto:../../projects/nexus/nexus/src/Nexus.sol:swap-signature}}
+{{ #include  ../../projects/nexus/nexus/src/Nexus.sol:swap-1}}
 
-    // 2. Transfer tokens from user to contract
-    IERC20(order.baseToken).safeTransferFrom(
-        msg.sender,
-        address(this),
-        order.baseAmount
-    );
-
-    // 3. Create routing instructions (next up)
-    // 4. Call Union contract (coming soon)
+{{ #include  ../../projects/nexus/nexus/src/Nexus.sol:swap-2}}
 }
 ```
 
@@ -118,32 +72,11 @@ Currently we assume the tokens will always be ERC20, which means that we cannot 
 Next we will construct our `FungibleAssetOrder`. We use the values from the channel mapping and the order to create them, it's just a simple format operation.
 
 ```solidity
-function swap(Order calldata order) external {
-    // 1. Get channel ID for destination chain
-    ...
+{{ #shiftinclude  auto:../../projects/nexus/nexus/src/Nexus.sol:swap-signature}}
+        ...
 
-    // 2. Transfer tokens from user to contract
-    ...
+{{ #include  ../../projects/nexus/nexus/src/Nexus.sol:swap-3}}
 
-    // 3. Create fungible asset order instruction
-    Instruction memory instruction = Instruction({
-        version: ZkgmLib.INSTR_VERSION_1,
-        opcode: ZkgmLib.OP_FUNGIBLE_ASSET_ORDER,
-        operand: ZkgmLib.encodeFungibleAssetOrder(
-            FungibleAssetOrder({
-                sender: abi.encodePacked(msg.sender),
-                receiver: order.receiver,
-                baseToken: abi.encodePacked(order.baseToken),
-                baseTokenPath: 0,
-                baseTokenSymbol: "", // We could add token metadata here
-                baseTokenName: "",   // We could add token metadata here
-                baseTokenDecimals: 18, // We could make this dynamic
-                baseAmount: order.baseAmount,
-                quoteToken: order.quoteToken,
-                quoteAmount: order.quoteAmount
-            })
-        )
-    });
 }
 ```
 
@@ -152,40 +85,17 @@ function swap(Order calldata order) external {
 To interact with the IBC contract, we will need to store it in our own contract. For now, let's pass it during construction.
 
 ```solidity
-    IZkgm public zkgm;
-
-    // Constructor to set the zkgm contract and initialize Ownable
-    constructor(address _zkgm) Ownable(msg.sender) {
-        require(_zkgm != address(0), "zkgm address cannot be zero");
-        zkgm = IZkgm(_zkgm);
-    }
+{{ #shiftinclude  auto:../../projects/nexus/nexus/src/Nexus.sol:constructor}}
 ```
 
 When submitting the order, we should provide a `timeoutTimestamp`. If the order isn't completed before the timout, the funds will be refunded. This timeout will ensure that if solvers do not want to handle the order (because of price fluctuations) or if there is an outage on the Union network, the user will still receive their funds.
 
 ```solidity
 function swap(Order calldata order) external {
-    // 1. Get channel ID for destination chain
-    ...
-
-    // 2. Transfer tokens from user to contract
-    ...
-
-    // 3. Create fungible asset order instruction
-    ...
-
-    // 4. Send packet to Union protocol
-    zkgm.send(
-        channelId,
-        timeoutTimestamp, // Could be current time + some buffer
-        0, // Optional block timeout
-        order.salt,
-        instruction
-    );
+        ...
+{{ #include  ../../projects/nexus/nexus/src/Nexus.sol:swap-4}}
 }
 ```
-
-Notice how for the order, we encode a `Batch`. This means that we could actually submit multiple orders at the same time, or add additional instructions, such as depositing gas for the user.
 
 ## Deployment
 
@@ -208,7 +118,7 @@ Once you've completed this part of the project, consider adding some additional 
 
 ### Relayer Fees
 
-Right now our code relies on the fact that the relayer is paid by the price of the base assets being higher than the quote assets (which means it is a profitable trade for the relayer). If the price delta is too small, relayers will not pick up this order. We could extend the `Batch` to include a relayer tip as well.
+Right now our code relies on the fact that the relayer is paid by the price of the base assets being higher than the quote assets (which means it is a profitable trade for the relayer). If the price delta is too small, relayers will not pick up this order. We could instead use the `Batch` instruction to include a relayer tip as well.
 
 ### Supported Assets
 

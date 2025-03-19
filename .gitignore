@@ -1,3 +1,4 @@
 book
 result
 **/node_modules
+.direnv

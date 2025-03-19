@@ -1,6 +1,8 @@
 [profile.default]
+via_ir = true
 src = "src"
 out = "out"
+solc_version = "0.8.27"
 libs = ["lib"]
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

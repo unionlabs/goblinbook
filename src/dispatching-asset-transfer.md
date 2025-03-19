@@ -82,7 +82,7 @@ Per chain, we can find the Union contracts [here](https://github.com/unionlabs/u
 Finally we need to obtain the quote token address (the address of the asset on the destination side).
 
 ```graphql
-{{ #shiftinclude auto:./queries/get-wrapped-transfer-request-details.graphql }}
+{{ #shiftinclude auto:./queries/get-transfer-request-details.graphql }}
 ```
 
 This should return

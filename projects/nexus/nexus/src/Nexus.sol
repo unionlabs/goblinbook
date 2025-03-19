@@ -1,21 +1,14 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+pragma solidity ^0.8.27;
 
-import "union/evm/contracts/apps/ucs/03-zkgm/lib/ZkgmLib.sol";
+import "union/evm/contracts/apps/ucs/03-zkgm/IZkgm.sol";
+import "union/evm/contracts/apps/ucs/03-zkgm/Types.sol";
+import "union/evm/contracts/apps/ucs/03-zkgm/Lib.sol";
 import "union/evm/contracts/core/04-channel/IBCPacket.sol";
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol"; // For onlyOwner
-
-interface IZkgm {
-    function send(
-        uint32 channelId,
-        uint64 timeoutHeight,
-        uint64 timeoutTimestamp,
-        bytes32 salt,
-        Instruction calldata instruction
-    ) external;
-}
 
 struct Order {
     uint32 destinationChainId;
@@ -25,13 +18,15 @@ struct Order {
     bytes quoteToken;
     uint256 quoteAmount;
     bytes32 salt;
+    uint64 timeoutTimestamp;
 }
 
 contract Nexus is Ownable {
     using ZkgmLib for *; // If it uses function extensions (optional)
+    using SafeERC20 for *; // If it uses function extensions (optional)
 
-    mapping(uint32 => uint32) public destinationToChannel;
     IZkgm public zkgm;
+    mapping(uint32 => uint32) public destinationToChannel;
 
     // Constructor to set the zkgm contract and initialize Ownable
     constructor(address _zkgm) Ownable(msg.sender) {
@@ -39,10 +34,10 @@ contract Nexus is Ownable {
         zkgm = IZkgm(_zkgm);
     }
 
-    function swap(Order order) {
+    function swap(Order memory order) public {
         // 1. Get channel ID for destination chain
-        bytes32 channelId = destinationToChannel[order.destinationChainId];
-        require(channelId != bytes32(0), "Invalid destination chain");
+        uint32 channelId = destinationToChannel[order.destinationChainId];
+        require(channelId != 0, "Invalid destination chain");
 
         // 2. Transfer tokens from user to contract
         IERC20(order.baseToken).safeTransferFrom(
@@ -52,35 +47,27 @@ contract Nexus is Ownable {
         );
 
         // 3. Create fungible asset order instruction
-        Instruction memory instruction = Instruction({
-            version: ZkgmLib.INSTR_VERSION_1,
-            opcode: ZkgmLib.OP_FUNGIBLE_ASSET_ORDER,
-            operand: ZkgmLib.encodeFungibleAssetOrder(
-                FungibleAssetOrder({
-                    sender: abi.encodePacked(msg.sender),
-                    receiver: order.receiver,
-                    baseToken: abi.encodePacked(order.baseToken),
-                    baseTokenPath: 0,
-                    baseTokenSymbol: "", // We could add token metadata here
-                    baseTokenName: "",   // We could add token metadata here
-                    baseTokenDecimals: 18, // We could make this dynamic
-                    baseAmount: order.baseAmount,
-                    quoteToken: order.quoteToken,
-                    quoteAmount: order.quoteAmount
-                })
-            )
-        });
+        Instruction memory instruction = zkgm.makeFungibleAssetOrder(
+            0,
+            channelId,
+            msg.sender,
+            order.receiver,
+            order.baseToken,
+            order.baseAmount,
+            order.quoteToken,
+            order.quoteAmount
+        );
 
         zkgm.send(
             channelId,
-            timeoutTimestamp, // Could be current time + some buffer
+            order.timeoutTimestamp, // Could be current time + some buffer
             0, // Optional block timeout
             order.salt,
             instruction
         );
     }
 
-    function setChannelId(uint32 destinationChainId, uint32 channelId) external onlyAdmin {
+    function setChannelId(uint32 destinationChainId, uint32 channelId) external onlyOwner {
         destinationToChannel[destinationChainId] = channelId;
     }
 }

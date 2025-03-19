@@ -1,3 +1,5 @@
+
+// ANCHOR: imports
 import { holesky, sepolia } from "viem/chains"
 import { mnemonicToAccount } from "viem/accounts"
 
@@ -5,6 +7,7 @@ import { ucs03abi } from '@unionlabs/sdk/evm/abi';
 import { createPublicClient, createWalletClient, erc20Abi, formatEther, http, parseEther } from "viem";
 import { Batch, FungibleAssetOrder } from "@unionlabs/sdk/evm/ucs03";
 import { generateSalt } from "./salt.js";
+// ANCHOR_END: imports
 
 
 // @ts-ignore hack to print bigints as JavaScript does not support this by default

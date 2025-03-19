@@ -191,29 +191,7 @@ We can fetch 'recommended' channels from the API. Here we are looking for channe
 
 ```bash
 gq https://graphql.union.build/v1/graphql -q '
-{
-  v1_ibc_union_channel_recommendations(where: {source_chain_id: {_eq: "17000"}}) {
-    destination_chain {
-      chain_id
-    }
-    source_chain {
-      chain_id
-    }
-    destination_chain_id
-    destination_channel_id
-    destination_client_id
-    destination_connection_id
-    destination_port_id
-    source_chain_id
-    source_channel_id
-    source_client_id
-    source_connection_id
-    source_port_id
-    status
-    version
-  }
-}
-'
+{{ #shiftinclude auto:../queries/channel-recommendations-source-holesky.graphql }}'
 ```
 
 </div>
@@ -269,24 +247,7 @@ Once the swap is enqueued and we receive the `txHash`, we can monitor it's progr
 
 ```bash
 gq https://graphql.union.build/v1/graphql -q '
-{
-  v1_ibc_union_packets(where: {packet_send_transaction_hash: {_eq: "${txHash}"}}) {
-    source_chain {
-      display_name
-    }
-    destination_chain {
-      display_name
-    }
-    data_decoded
-    traces {
-      type
-      block_hash
-      transaction_hash
-      event_index
-    }
-  }
-}
-'
+{{ #shiftinclude auto:../queries/packets-by-tx-hash.graphql.ignore }}'
 ```
 
 </div>

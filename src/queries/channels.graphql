@@ -1,0 +1,12 @@
+{
+  v1_ibc_union_channels(limit: 30) {
+    source_chain {
+      display_name
+    }
+    destination_chain {
+      display_name
+    }
+    source_channel_id
+	version
+  }
+}

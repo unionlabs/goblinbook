@@ -31,17 +31,8 @@ You can query the API to see all versions of an address:
 <div id="Command" class="tabcontent">
 
 ```bash
-gq https://graphql.union.build/v1/graphql -q '
-{
-  get_address_types_for_display_address(
-      args: { display_address: "union1d03cn520attx29qugxh4wcyqm9r747j64ahcj3" }
-  ) {
-    display
-    canonical
-    zkgm
-  }
-}
-
+gq https://development.graphql.union.build/v1/graphql -q '
+{{ #shiftinclude auto:../queries/get-address-types-for-display-address.graphql }}
 '
 ```
 

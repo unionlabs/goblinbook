@@ -1,0 +1,11 @@
+{
+  v1_ibc_union_clients(limit: 3) {
+    client_id
+    chain {
+      display_name
+    }
+    counterparty_chain {
+      display_name
+    }
+  }
+}

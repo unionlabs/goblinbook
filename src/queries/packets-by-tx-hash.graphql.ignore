@@ -1,0 +1,17 @@
+{
+  v1_ibc_union_packets(where: {packet_send_transaction_hash: {_eq: "${txHash}"}}) {
+    source_chain {
+      display_name
+    }
+    destination_chain {
+      display_name
+    }
+    data_decoded
+    traces {
+      type
+      block_hash
+      transaction_hash
+      event_index
+    }
+  }
+}

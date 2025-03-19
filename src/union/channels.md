@@ -51,19 +51,8 @@ We can query active channels by running:
 <div id="Command" class="tabcontent">
 
 ```bash
-gq https://graphql.union.build/v1/graphql -q '
-{
-  v1_ibc_union_channels(limit: 30) {
-    source_chain {
-      display_name
-    }
-    destination_chain {
-      display_name
-    }
-    source_channel_id
-	version
-  }
-}
+gq https://development.graphql.union.build/v1/graphql -q '
+{{ #shiftinclude auto:../queries/channels.graphql }}
 '
 ```
 

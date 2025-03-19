@@ -70,18 +70,7 @@ Although step 3 seems trivial, it is actually quite annoying when dealing with m
 Since Union leverages channels, we will need to query the channel-id to use between Sepolia and Holesky. We're using the `ucs03-zkgm-0` protocol, so that's what we'll filter on. The `v2_channel_recommendations` shows officially supported channels by the Union team.
 
 ```graphql
-query Channels @cached(ttl: 60) {
-  v2_channel_recommendations(where: { version: { _eq: "ucs03-zkgm-0" } }) {
-    source_port_id
-    source_chain_id
-    source_channel_id
-    source_connection_id
-    destination_port_id
-    destination_chain_id
-    destination_channel_id
-    destination_connection_id
-  }
-}
+{{ #shiftinclude auto:./queries/channel-recommendations-zkgm.graphql }}
 ```
 
 For our transfer, we are interested in the `source_channel_id` for Sepolia (`ethereum.11155111`).
@@ -93,16 +82,7 @@ Per chain, we can find the Union contracts [here](https://github.com/unionlabs/u
 Finally we need to obtain the quote token address (the address of the asset on the destination side).
 
 ```graphql
-get_wrapped_transfer_request_details(args:{
-    p_source_universal_chain_id: "ethereum.11155111",
-    p_destination_universal_chain_id: "ethereum.17000",
-    p_base_token: ${WETH_ADDRESS}
-  }) {
-    quote_token
-    source_channel_id
-    destination_channel_id
-    already_exists
-  }
+{{ #shiftinclude auto:./queries/get-wrapped-transfer-request-details.graphql }}
 ```
 
 This should return

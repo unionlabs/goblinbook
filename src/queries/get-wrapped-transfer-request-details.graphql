@@ -1,0 +1,13 @@
+{
+    get_wrapped_transfer_request_details(args:{
+        p_source_universal_chain_id: "ethereum.11155111",
+        p_destination_universal_chain_id: "ethereum.17000",
+        p_base_token: "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"
+    }) {
+        quote_token
+        source_channel_id
+        destination_channel_id
+        already_exists
+    }
+}
+

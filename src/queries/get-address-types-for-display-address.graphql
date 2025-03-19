@@ -1,0 +1,9 @@
+{
+  get_address_types_for_display_address(
+      args: { display_address: "union1d03cn520attx29qugxh4wcyqm9r747j64ahcj3" }
+  ) {
+    display
+    canonical
+    zkgm
+  }
+}

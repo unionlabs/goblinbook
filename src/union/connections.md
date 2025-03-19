@@ -43,20 +43,8 @@ Usually the relation between chains and connections is one-on-one, meaning that 
 <div id="Command" class="tabcontent">
 
 ```bash
-gq https://graphql.union.build/v1/graphql -q '
-{
-  v1_ibc_union_connections(limit: 30) {
-    source_chain {
-      display_name
-    }
-    destination_chain {
-      display_name
-    }
-    source_connection_id
-    destination_connection_id
-  }
-}
-'
+gq https://development.graphql.union.build/v1/graphql -q '
+{{ #shiftinclude auto:../queries/connections.graphql }}'
 ```
 
 </div>

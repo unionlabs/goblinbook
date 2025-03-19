@@ -81,18 +81,8 @@ We can query for current live clients by running:
 <div id="Command" class="tabcontent">
 
 ```bash
-gq https://graphql.union.build/v1/graphql -q '
-{
-  v1_ibc_union_clients(limit: 3) {
-    client_id
-    chain {
-      display_name
-    }
-    counterparty_chain {
-      display_name
-    }
-  }
-}'
+gq https://development.graphql.union.build/v1/graphql -q '
+{{ #shiftinclude auto:../queries/clients.graphql }}'
 ```
 
 </div>

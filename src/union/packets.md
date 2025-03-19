@@ -101,14 +101,8 @@ We can see this structure inside the packets live:
 <div id="Command" class="tabcontent">
 
 ```bash
-gq https://graphql.union.build/v1/graphql -q '
-{
-  v1_ibc_union_packets(limit: 5) {
-    channel_version
-    data_decoded
-  }
-}
-'
+gq https://development.graphql.union.build/v1/graphql -q '
+{{ #shiftinclude auto:../queries/packets.graphql }}'
 ```
 
 </div>

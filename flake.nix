@@ -80,11 +80,33 @@
 
           };
 
+          checks = {
+            graphql-queries =
+              pkgs.runCommand "graphql-query-tests"
+                {
+                  buildInputs = [
+                    pkgs.nodePackages.graphqurl
+                    pkgs.bash
+                  ];
+                }
+                ''
+                  mkdir -p $out
+                    cd ${./.}
+                    ./scripts/test-queries.sh > $out/test-results.log 2>&1 || {
+                      cat $out/test-results.log
+                      exit 1
+                    }
+                    echo "GraphQL queries validated successfully" >> $out/test-results.log
+                    cat $out/test-results.log
+                '';
+          };
+
           devShells.default = pkgs.mkShell {
             packages = with pkgs; [
               mdbook
               mdbook-mermaid
               nodePackages.mermaid-cli
+              nodePackages.graphqurl
               self'.packages.shiftinclude
             ];
           };

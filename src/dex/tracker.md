@@ -1,5 +1,9 @@
 # Historic data
 
+> **Under Construction**
+>
+> This chapter relies on some unreleased features and cannot be completed yet.
+
 We will want to analyze our orderflow and expose a personal dashboard to our users. For performance reasons, we don't solely want to rely on the Union graphql API, as refetching loads of data is inefficient. Instead we will use build a data warehouse on Postgresql, which we can combine with TimescaleDB and other plugins for advanced analysis.
 
 ## Features

@@ -4,13 +4,13 @@
   "description": "SDK for the Nexus Exchange",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
     "start": "ts-node src/index.ts"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "viem": "^2.23.5"
+    "@apollo/client": "^3.13.4",
+    "viem": "^2.23.12"
   }
 }

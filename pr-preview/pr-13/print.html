@@ -1,0 +1,1725 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Interop: Principles, Techniques, and Tools</title>
+        <meta name="robots" content="noindex">
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="src/static/custom.css">
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Interop: Principles, Techniques, and Tools</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <p><img src="./static/cover.png" alt="cover" /></p>
+<p>preview</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="foreword"><a class="header" href="#foreword">Foreword</a></h1>
+<p>Blockchains are fundamentally about codifying agreements and adhering to what was coded. There are no political backdoors or deals behind closed doors—just one simple premise: if I can read the code of a smart contract, I know exactly what I'm getting into. This is an empowering philosophy. It creates a true meritocracy that incentivizes people to learn, research, and become intimately familiar with the financial foundation upon which the world runs.</p>
+<p>Enabling this philosophy requires complex layers of algorithms and game theory, which ultimately provide users with an experience similar to Web2. We often hear complaints that "this is too much research, not enough product," yet without this immense foundational work, we would merely be creating an illegal financial network where founders and CEOs could arbitrarily freeze and steal funds. Between decentralized and centralized systems lie protocols masquerading as the former, seeking quick traction before exit scamming—the worst of both worlds.</p>
+<p>The Goblin Book aims to educate readers about true decentralization: why it matters, when it matters, and what tools and knowledge are necessary to thrive in a decentralized world. Beyond this, it focuses on interoperability (or ledger-of-ledger technology). Written based on modern understanding of high-performance blockchains, this book demonstrates that we need not choose between decentralization, security, and low latency.</p>
+<p>While this book delves into the most fundamental aspects of blockchain technology, making it a demanding read, the insights it offers are invaluable for understanding the future of decentralized systems.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
+<p>This book is intended for tech-savy readers, interested in learning extremely advanced blockchain and interoperability concepts. Although it explains some of the most complex topics in blockchain, we do try to start at the basics.</p>
+<p>Various chapters are accompanied by coding projects. The complete version of each project is checked in our book <a href="https://github.com/unionlabs/goblinbook/tree/main/projects">repository</a>.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="getting-started"><a class="header" href="#getting-started">Getting Started</a></h1>
+<p>Developing interoperability technology—or working across multiple chains simultaneously—requires a complex local development setup. You'll often need to run various chains and off-chain services concurrently. Consider a simple application that aggregates traffic from Ethereum, Solana, and Hyperliquid. Such an application would need to operate:</p>
+<h3 id="development-environments"><a class="header" href="#development-environments">Development Environments:</a></h3>
+<ul>
+<li>Ethereum devnet</li>
+<li>Arbitrum devnet (required for Hyperliquid settlement)</li>
+<li>Solana devnet</li>
+<li>Hyperliquid devnet</li>
+</ul>
+<h3 id="services"><a class="header" href="#services">Services:</a></h3>
+<ul>
+<li>Relayer</li>
+<li>Indexer</li>
+<li>Database</li>
+<li>Frontend</li>
+</ul>
+<h3 id="programming-languages-and-tools"><a class="header" href="#programming-languages-and-tools">Programming Languages and Tools:</a></h3>
+<ul>
+<li>Solidity (via solc)</li>
+<li>Rust</li>
+<li>Golang</li>
+<li>Typescript</li>
+<li>Docker</li>
+</ul>
+<p>This list continues to grow as projects become more sophisticated.
+Managing tool versions across different developers becomes a significant challenge. Currently, there are two main approaches for handling complex setups like this: Bazel and Nix. Throughout this book, we'll use Nix—our Goblin-approved solution—to manage these development environments efficiently.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="nixos"><a class="header" href="#nixos">Nixos</a></h1>
+<p>This book heavily leverages Nix in examples to make it easier for you to build and fetch tools used in examples. Get started by <a href="https://docs.determinate.systems/">installing Nix</a>. You do not need to actually learn the Nix language to read this book, although some basic knowledge may help you out.</p>
+<h2 id="following-along"><a class="header" href="#following-along">Following Along</a></h2>
+<p>Whenever we provide code examples for you to execute in your shell, the code snippet will be accompanied by a <code>Nix</code> tab. The <code>Nix</code> tab shows you the commands necessary to load the tools into your shell for executing that snippet.</p>
+<p>For example, here is a snippet to query the Union GraphQL API, which requires <code>graphqurl</code> to execute. If you click on the <code>Nix</code> tab and copy the lines there, <code>graphqurl</code> will be installed in your shell.</p>
+<p>Don't worry about bloating your system. Once you close the shell, everything that was installed will be gone again.</p>
+<p>Here for example, we show how to query for packets using <code>gq</code>.</p>
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'Command')">Command</button>
+  <button class="tablinks" onclick="openTab(event, 'Nix')">Nix</button>
+</div>
+<div id="Command" class="tabcontent">
+<pre><code class="language-bash">gq https://graphql.union.build/v1/graphql -q '
+{
+  v1_ibc_union_packets(limit: 3) {
+    packet_hash
+    packet_send_block_hash
+  }
+}
+'
+</code></pre>
+</div>
+<div id="Nix" class="tabcontent">
+<pre><code class="language-bash">nix shell nixpkgs#nodePackages.graphqurl
+</code></pre>
+</div>
+<p>If you decide not to use nix, do not worry. We rely mainly on common, open-source software, that can usually be installed using <a href="https://www.npmjs.com/">npm</a> or <a href="https://brew.sh/">brew</a>. All examples can still be followed along with alternative installation methods.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="apple"><a class="header" href="#apple">Apple</a></h1>
+<p>Most developers building on Union use macbooks as their main development machine, in combination with lightweight *nix VMs.</p>
+<p>When locally developing on macbooks, there's a few things to keep in mind:</p>
+<ul>
+<li>Docker does not have first class support. We recommend <a href="https://orbstack.dev/">orbstack</a> and our <a href="getting-started/apple/./orbstack.html">guide</a>.</li>
+<li>Some applications need to be cross-compiled. For all Union-related services, we provide cross-compiled binaries. However other projects may not be as widely support.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="orbstack"><a class="header" href="#orbstack">OrbStack</a></h1>
+<p>OrbStack is a fast, light-weight alternative to Docker Desktop and traditional VMs for macOS. It provides a seamless way to run containers and Linux machines on your Mac with significantly better performance and resource efficiency than traditional solutions.</p>
+<p>OrbStack integrates containerization and virtualization capabilities directly into macOS, allowing you to:</p>
+<ul>
+<li>Run Docker containers with native-like performance</li>
+<li>Create and manage lightweight Linux VMs</li>
+<li>Access containers and VMs via terminal, SSH, or VS Code</li>
+<li>Seamlessly share files between host and guest systems</li>
+<li>Use familiar Docker CLI commands without modification</li>
+</ul>
+<p>Normally, these functions are not available on Apple, or do not make use of the latest Apple features, which causes performance degradation. For singular docker containers, you do not really notice this, but when for example building a relayer, you will run multiple devnets on one machine, as well as a prover. Performance is key to mimic production environments.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="dispatching-an-asset-transfer"><a class="header" href="#dispatching-an-asset-transfer">Dispatching an Asset Transfer</a></h1>
+<p>Let's dive into interoperability by performing a complex cross-chain operation programmatically. While this interoperability touches upon several technical concepts like asset standards, altVMs, indexing, light clients, and storage proofs, our main goal is to execute an end-to-end operation and understand the components involved. We'll explore the theoretical foundations in later chapters.</p>
+<p>We will implement a TypeScript program that can manage EVM (Ethereum Virtual Machine) wallets, interact with multiple chains, and dispatch asset transfers through smart contract interactions. Finally, we will query an indexing service to trace our transfer's progress. While this code works in both frontend and backend environments thanks to TypeScript, we recommend Rust for production backends.</p>
+<h2 id="setting-up-the-project"><a class="header" href="#setting-up-the-project">Setting up the project</a></h2>
+<pre><code class="language-console">mkdir asset-dispatcher
+</code></pre>
+<p>Create a <code>flake.nix</code> with the following configuration. This sets up <a href="https://deno.com/">Deno</a> for your local development environment and adds code formatters (run with <code>nix fmt</code>). Enable the development environment by running <code>nix develop</code>.</p>
+<pre><code class="language-nix">{
+  description = "Example Union TypeScript SDK usage";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+  };
+
+  outputs =
+    inputs@{ flake-parts, nixpkgs, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "aarch64-darwin"
+      ];
+      perSystem =
+        {
+          config,
+          self',
+          inputs',
+          pkgs,
+          lib,
+          system,
+          ...
+        }:
+        let
+          packageJson = lib.importJSON ./package.json;
+        in
+        {
+          packages = {
+            default = pkgs.buildNpmPackage {
+              pname = packageJson.name;
+              inherit (packageJson) version;
+              src = ./.;
+              npmDepsHash = "sha256-ZN47MDJes95+CXBoPaN4blpxP12ZS6trnUtm0+tYTqo=";
+
+              postInstall = ''
+                mkdir -p $out/bin
+                cat &gt; $out/bin/${packageJson.name} &lt;&lt; EOF
+                #!/usr/bin/env node
+                require('../lib/node_modules/${packageJson.name}/dist/src/index.js')
+                EOF
+                chmod +x $out/bin/${packageJson.name}
+              '';
+            };
+          };
+
+          devShells.default = pkgs.mkShell {
+            buildInputs = with pkgs; [
+              nodejs
+              nodePackages_latest.typescript-language-server
+              biome
+              nixfmt
+            ];
+          };
+        };
+    };
+}
+</code></pre>
+<p>Next, create <code>src/index.ts</code>. This will contain most of our logic. Add a simple test:</p>
+<pre><code class="language-typescript">console.log("hello, world");
+</code></pre>
+<p>Run it with <code>deno run src/index.ts</code> to verify your environment works. You should see <code>hello, world</code> in your terminal.</p>
+<h2 id="managing-wallets"><a class="header" href="#managing-wallets">Managing wallets</a></h2>
+<p>Let's modify <code>index.ts</code> to create and fund two wallets. Note: This example hardcodes mnemonics for demonstration purposes. In production, always use proper key management services.</p>
+<pre><code class="language-typescript">import { createWalletClient, http } from "npm:viem";
+import { mnemonicToAccount } from "npm:@viem/accounts";
+import { sepolia, holesky } from "npm:viem/chains";
+
+const sepoliaWallet = createWalletClient({
+  account: mnemonicToAccount(memo),
+  chain: sepolia,
+  transport: http(),
+});
+
+const holeskyWallet = createWalletClient({
+  account: mnemonicToAccount(memo),
+  chain: holesky,
+  transport: http(),
+});
+
+console.log(`Sepolia address: ${sepoliaWallet.account.address}`);
+console.log(`Holesky address: ${holeskyWallet.account.address}`);
+</code></pre>
+<p>Create two variables, <code>mnemonic1</code> and <code>mnemonic2</code>, each containing a 12-word sentence (space-separated) as a string. Run the script and save your addresses. You can use the same mnemonic if you prefer.</p>
+<p>To fund our Sepolia address for contract interactions, we'll use a <a href="https://www.alchemy.com/faucets/ethereum-sepolia">faucet</a>.</p>
+<p>Let's verify our faucet funding by checking the balance:
+create-client</p>
+<pre><code class="language-typescript">import { createPublicClient, formatEther } from "npm:viem";
+
+const sepoliaClient = createPublicClient({
+  chain: sepolia,
+  transport: http(),
+});
+
+const balance = await sepoliaClient.getBalance({
+  address: sepoliaWallet.account.address,
+});
+
+console.log(`Sepolia balance: ${formatEther(balance)} ETH (${balance} wei)`);
+</code></pre>
+<p>We use <code>formatEther</code> for human-readable output. The parenthesized value shows the raw balance. We'll discuss sats, decimals, and asset standards later, but note that ETH is stored in wei on-chain (1 ETH = 10^18 wei).</p>
+<p>At this point, we have secured testnet funds and set up a local wallet (though not production-ready).</p>
+<h2 id="performing-the-asset-transfer"><a class="header" href="#performing-the-asset-transfer">Performing the Asset Transfer</a></h2>
+<p>To do the bridge operation, we'll directly interact with the Union contracts through their ABI. We will use the Union <a href="https://www.npmjs.com/package/@unionlabs/sdk">SDK</a> package to import some types and the required ABIs. The sdk provides both low-level bindings to various contracts, as well as backend clients and effects based on <a href="https://effect.website/">effect.website</a>.</p>
+<p>For now we are going to use the raw bindings, to show what happens under the hood. To perform an asset transfer, we need to perform 3 distinct steps:</p>
+<ol>
+<li>Gather configuration parameters.</li>
+<li>Approve the contracts.</li>
+<li>Sending the bridge transfer.</li>
+</ol>
+<p>For step 1. we will rely on etherscan and the Union API. In production you might want to store hardcoded mappings, or dynamically fetch these values from your own APIs. Constructing the transaction is simple for an asset transfer. This is also the stage where we might add 1-click swaps, or DEX integration later down the road.</p>
+<p>Although step 3 seems trivial, it is actually quite annoying when dealing with multiple, independent ecosystems. That's why we are doing EVM to EVM for now, so we are only dealing with one execution environment implementation.</p>
+<h3 id="configuration-parameters"><a class="header" href="#configuration-parameters">Configuration Parameters</a></h3>
+<p>Since Union leverages channels, we will need to query the channel-id to use between Sepolia and Holesky. We're using the <code>ucs03-zkgm-0</code> protocol, so that's what we'll filter on. The <code>v2_channel_recommendations</code> shows officially supported channels by the Union team.</p>
+<pre><code class="language-graphql">query Channels @cached(ttl: 60) {
+  v1_ibc_union_channel_recommendations(where: { version: { _eq: "ucs03-zkgm-0" } }) {
+    source_port_id
+    source_chain_id
+    source_channel_id
+    source_connection_id
+    destination_port_id
+    destination_chain_id
+    destination_channel_id
+    destination_connection_id
+  }
+}
+</code></pre>
+<p>For our transfer, we are interested in the <code>source_channel_id</code> for Sepolia (<code>ethereum.11155111</code>).</p>
+<p>Since we are doing a WETH transfer, we can use <a href="https://sepolia.etherscan.io/token/0x7b79995e5f793a07bc00c21412e50ecae098e7f9#readContract">etherscan</a> to find the asset parameters (symbol, decimals and name). Union does verify onchain that the provided parameters are correct. We do pass them to the contract because we want to calculate the packet hash ahead of time. You might wonder why we even use these values in the contract? That is to ensure that when Union instantiates a new asset on the destination chain, it is configured correctly (same symbol, decimals, and name).</p>
+<p>Per chain, we can find the Union contracts <a href="https://github.com/unionlabs/union/blob/97e5e8346f824e482185953a6648ad8b9bed9ac3/deployments/deployments.json#L256">here</a>. For testnet deployments, these might be updated as of writing this book.</p>
+<p>Finally we need to obtain the quote token address (the address of the asset on the destination side).</p>
+<pre><code class="language-graphql">query GetTransferRequestDetails {
+    get_transfer_request_details(args:{
+        p_source_universal_chain_id: "ethereum.11155111",
+        p_destination_universal_chain_id: "ethereum.17000",
+        p_base_token: "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"
+    }) {
+        quote_token
+        source_channel_id
+        destination_channel_id
+        already_exists
+        wrap_direction
+    }
+}
+
+</code></pre>
+<p>This should return</p>
+<pre><code>{
+  "data": {
+    "get_wrapped_transfer_request_details": [
+      {
+        "quote_token": "0x685a6d912eced4bdd441e58f7c84732ceccbd1e4",
+        "source_channel_id": 8,
+        "destination_channel_id": 47,
+        "already_exists": true
+      }
+    ]
+  }
+}
+</code></pre>
+<p>The <code>source_channel_id</code> should match the channel from the <code>v2_channel_recommendations</code> query.</p>
+<p>The <code>quote_token</code> is deterministically generated depending on the contract addresses and channel_ids. If <code>already_exists</code> is false, the Union contract on the destination chain will instantiate a new asset, hence why the deterministically derived address algorithm is so important.</p>
+<h2 id="approvals"><a class="header" href="#approvals">Approvals</a></h2>
+<p>Under the hood, the Union contract will withdraw funds from our account before bridging them to Holesky. This withdrawal is normally not allowed (for security reasons, imagine if smart contracts were allowed to just remove user funds!), so we need to <code>approve</code> the Union contract to allow it to withdraw.</p>
+<pre><code class="language-typescript">import { erc20Abi } from "viem";
+
+await sepoliaWallet.writeContract({
+  address: "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9",
+  abi: erc20Abi,
+  functionName: "approve",
+  args: [ucs03address, 100000000000n],
+});
+</code></pre>
+<p>For convenience, we are allowing the contract <code>MaxUint256</code>, so that we do not need to do further approvals. From now on, the Union ucs03 contract can withdraw WETH on Sepolia.</p>
+<h2 id="bridging"><a class="header" href="#bridging">Bridging</a></h2>
+<p>Executing the actual bridge operation seems like quite a lot of lines of code. Later we will use the alternative typescript client and effects API, to simplify the flow.</p>
+<p>When we interact with the <code>send</code> entrypoint, we submit a program. Union's bridge standard leverages a lightweight, non-Turing complete VM. That way, we can do 1-click swaps, forwards, or other arbitrary logic. The <code>args</code> for our call in this case is the <code>Batch</code> instruction, which is effectively a list of instructions to execute. Inside the batch, we have two <code>FungibleAssetOrder</code>s. The first order is transferring wrapped Eth using a 1:1 ratio (meaning that on the receiving side, the user will receive 100% of the amount). The second order has a 1:0 ratio, meaning that the user receives nothing on the destination side. Effectively, we are 'tipping' the protocol here. An alternative way to ensure this transfer is funded, is altering the ratio of the first transfer. For example, a 100:99 ratio would be a 1% transfer fee.</p>
+<pre><code class="language-typescript">import { Batch, FungibleAssetOrder } from "npm:@unionlabs/sdk/evm/ucs03";
+import { ucs03abi } from "npm:@unionlabs/sdk/evm/abi";
+import { toHex, type Hex } from "viem";
+
+function generateSalt() {
+  const rawSalt = new Uint8Array(32);
+  crypto.getRandomValues(rawSalt);
+  return toHex(rawSalt) as Hex;
+}
+
+let transferHash = await sepoliaWallet.writeContract({
+  account: sepoliaWallet.account.address as `0x${string}`,
+  abi: ucs03abi,
+  chain: sepolia,
+  functionName: "send",
+  address: ucs03address,
+  args: [
+    // obtained from the graphql Channels query
+    sourceChannelId,
+    // this transfer is timeout out by timestamp, so we set height to 0.
+    0n,
+    // The actual timeout. It is current time + 2 hours.
+    BigInt(Math.floor(Date.now() / 1000) + 7200),
+    generateSalt(),
+    // We're actually enqueuing two transfers, the main transfer, and fee.
+    Batch([
+      // Our main transfer.
+      FungibleAssetOrder([
+        sepoliaWallet.account.address,
+        holeskyWallet.account.address,
+        WETH_ADDRESS,
+        4n,
+        // symbol
+        "WETH",
+        // name
+        "Wrapped Ether",
+        // decimals
+        18,
+        // path
+        0n,
+        // quote token
+        "0x685a6d912eced4bdd441e58f7c84732ceccbd1e4",
+        // quote amount
+        4n,
+      ]),
+      // Our fee transfer.
+      FungibleAssetOrder([
+        sepoliaWallet.account.address,
+        holeskyWallet.account.address,
+        WETH_ADDRESS,
+        1n,
+        // symbol
+        "WETH",
+        // name
+        "Wrapped Ether",
+        // decimals
+        18,
+        // path
+        0n,
+        // quote token
+        "0x685a6d912eced4bdd441e58f7c84732ceccbd1e4",
+        // quote amount
+        0n,
+      ]),
+    ]),
+  ],
+});
+</code></pre>
+<p>The denomAddress is the ERC20 address of the asset we want to send. You might notice that regular ETH does not have an address, because it is not an ERC20. To perform the transfer, ETH must be wrapped to WETH (optional if you already own WETH):</p>
+<pre><code class="language-typescript">import { parseEther } from "viem";
+
+// WETH ABI - we only need the deposit function for wrapping
+const WETH_ABI = [
+  {
+    name: "deposit",
+    type: "function",
+    stateMutability: "payable",
+    inputs: [],
+    outputs: [],
+  },
+] as const;
+
+// Create the wallet client and transaction
+const hash = await sepoliaWallet.writeContract({
+  address: WETH_ADDRESS,
+  abi: WETH_ABI,
+  functionName: "deposit",
+  value: parseEther("0.0001"), // Amount of ETH to wrap
+});
+
+console.log(`Wrapping ETH: ${hash}`);
+</code></pre>
+<p>Once this transaction is included, the transfer is enqueued and will be picked up by a solver. Next we should monitor the transfer progression using an indexer. The easiest solution is [graphql.union.build], which is powered by [<code>hubble</code>]. Later we will endeavour to obtain the data directly from public RPCs as well.</p>
+<h2 id="tracking-transfer-progression"><a class="header" href="#tracking-transfer-progression">Tracking Transfer Progression</a></h2>
+<p>Once the transfer is enqueued onchain, we go through a pipeline of backend operations, which normally are opaque to the enduser, but useful for us for debugging (and fun to look at). Union refers to these steps as <code>Traces</code>, and they are indexed and stored for us by Hubble. Some of these include:</p>
+<ul>
+<li><code>PACKET_SEND</code></li>
+<li><code>PACKET_SEND_LC_UPDATE_L0</code></li>
+<li><code>PACKET_RECV</code></li>
+<li><code>PACKET_ACK</code></li>
+</ul>
+<p>The <code>PACKET_SEND</code> was actually us performing the transfer. The other steps are executed by solvers. Later we will write a solver to explore what each entails.</p>
+<p>To get the tracing data, we'll make a <a href="https://graphql.org/">Graphql</a> query. For now we will just use <code>fetch</code> calls, but there are many high quality graphql clients around.</p>
+<pre><code class="language-typescript">let query = `
+  query {
+      v2_transfers(where: {transfer_send_transaction_hash:{_eq: "${transferHash}"}}) {
+          traces {
+              type
+              height
+              chain { 
+                  display_name
+                  universal_chain_id
+              }
+          }
+      }
+  }`;
+
+const response = await fetch("https://graphql.union.build", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    query,
+    variables: {},
+  }),
+});
+
+const data = await response.json();
+
+console.log(data);
+</code></pre>
+<p>For example, for the transaction hash <code>0xa7389117b99b7de4dcd71dc2acbe21d42826dd4d35174c72f23c0adb64144863</code>, we get the following data:</p>
+<pre><code class="language-json">{
+  "data": {
+    "v2_transfers": [
+      {
+        "traces": [
+          {
+            "type": "PACKET_SEND",
+            "height": 7839514,
+            "chain": {
+              "display_name": "Sepolia",
+              "universal_chain_id": "11155111.sepolia"
+            }
+          },
+          {
+            "type": "PACKET_SEND_LC_UPDATE_L0",
+            "height": null,
+            "chain": {
+              "display_name": "Union Testnet 9",
+              "universal_chain_id": "union-testnet-9.union"
+            }
+          },
+          {
+            "type": "PACKET_RECV",
+            "height": null,
+            "chain": {
+              "display_name": "Union Testnet 9",
+              "universal_chain_id": "union-testnet-9.union"
+            }
+          },
+          {
+            "type": "WRITE_ACK",
+            "height": null,
+            "chain": {
+              "display_name": "Union Testnet 9",
+              "universal_chain_id": "union-testnet-9.union"
+            }
+          },
+          {
+            "type": "WRITE_ACK_LC_UPDATE_L0",
+            "height": null,
+            "chain": {
+              "display_name": "Sepolia",
+              "universal_chain_id": "11155111.sepolia"
+            }
+          },
+          {
+            "type": "PACKET_ACK",
+            "height": null,
+            "chain": {
+              "display_name": "Sepolia",
+              "universal_chain_id": "11155111.sepolia"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
+</code></pre>
+<p>Universal chain IDs are chain identifiers specifically used by Union, which are, as the name implies, universally unique. The reason for deviating from what the chains themselves use, is described <a href="./union/chain-ids.html">here</a>.</p>
+<p>If we want to monitor the progression of a transfer, we would poll this query. There are three important trace types to watch for.</p>
+<ul>
+<li><code>PACKET_SEND</code>: our transaction was included on the source chain. From this moment on, explorer links using the transaction hash should return data. (on average, the Union API is about 5-10 seconds faster than Etherscan though.)</li>
+<li><code>PACKET_RECV</code>: the relayer has submitted a proof and the packet for the transfer. Funds are now usable on the destination side. The transfer flow is now 'completed' from the user's perspective.</li>
+<li><code>PACKET_ACK</code>: the relayer has acknowledged the transfer on the source chain. If the open-filling API was used, this event will also trigger payment for the solver. This is only of interest for solvers/backend engineers.</li>
+</ul>
+<p>Once we see the <code>PACKET_RECV</code> event, our funds will be usable on Holesky. The traces after that are used by the system to pay the solver, and maintain bookkeeping.</p>
+<p>We can query Holesky for our balance to verify that we received funds:</p>
+<pre><code class="language-typescript">
+
+const holeskyClient = createPublicClient({
+  chain: holesky,
+  transport: http(),
+});
+
+const holeskyBalance = await holeskyClient.readContract({
+  address: "0x685a6d912eced4bdd441e58f7c84732ceccbd1e4",
+  abi: erc20Abi,
+  functionName: "balanceOf",
+  args: [holeskyWallet.account.address],
+});
+
+const formattedBalance = balance / 10n ** BigInt(18);
+
+console.log(`Token balance: ${formattedBalance} (${holeskyBalance})`);
+</code></pre>
+<p>This should now return the amount sent in the first <code>FungibleAssetOrder</code>.</p>
+<h2 id="summary"><a class="header" href="#summary">Summary</a></h2>
+<p>This was a hands-on way to introduce you to multichain programming. We have ommitted the implementation details of many of the individual steps. You have now experienced the transfer flow that a regular user experiences when interacting through UIs. In the next chapter, we will go deeper into what each trace meant. Later we will write a simple solver, and show orders are filled.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="overview"><a class="header" href="#overview">Overview</a></h1>
+<p>Before we explore how IBC and Union work, we take a short detour to get acquainted with interoperability in general.</p>
+<p>At its core, interoperability is about relaying data between two smart contracts on different chains, the same way that the internet is used to relay data between two processes on different servers. In our analogy here, a smart contract functions as a standalone process. Building from this abstraction, we realise that a connection really acts as a way for smart contracts to send bytes to each other.</p>
+<p>Often in various protocols, we talk about message sending between chains. These messages are effectively data packets. Just as TCP/IP provides guarantees about packet delivery and ordering across the internet, blockchain interoperability protocols must provide similar guarantees about message delivery and execution across chains. The key difference is that while internet protocols primarily ensure data integrity and delivery, blockchain interoperability protocols must also ensure consensus agreement and cryptographic verification of the messages being relayed.</p>
+<p>This means that cross-chain communication requires not just moving data, but also proving that the data came from a valid source and was properly authorized. The relayers that facilitate this communication serve a role similar to routers in internet infrastructure, but with the additional responsibility of providing cryptographic proofs and handling consensus verification.</p>
+<p>We will go through each layer of Union's protocol and explain how packet semantics, cryptographic verification and guaranteed delivery is implemented. We shall see how (light)clients, connections, channels and packets relate to eachother and inspect the real-life usage of the core general-message passing protocol in asset transfers.</p>
+<p>The next sections are heavy on theoretical knowledge, after which we will continue to build a dApp which leverages Union to interact with Bitcoin derivatives.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="connections"><a class="header" href="#connections">Connections</a></h1>
+<p>At the beginning of the lifecycle of communication between two chains, a connection must be opened. This is a process by which one chain initiates the opening of the connection, and the other responds with certain data. We call this process a 4-way handshake, as each chain must send two messages. The handshake is used to bootstrap the connection, exchanging critical information such as the current validator set, chain identifier, and consensus mechanism. This data is stored on both chains and, once the handshake is completed, used for verifying future cross-chain messages.</p>
+<pre class="mermaid">sequenceDiagram
+    participant Chain A
+    participant Relayer
+    participant Chain B
+
+    Chain A-&gt;&gt;Relayer: ConnectionOpenInit (includes Chain A's info)
+    Relayer-&gt;&gt;Chain B: Relay ConnectionOpenInit
+    Chain B-&gt;&gt;Relayer: ConnectionOpenTry (includes Chain B's info)
+    Relayer-&gt;&gt;Chain A: Relay ConnectionOpenTry
+    Chain A-&gt;&gt;Relayer: ConnectionOpenAck (verify Chain B's info)
+    Relayer-&gt;&gt;Chain B: Relay ConnectionOpenAck
+    Chain B-&gt;&gt;Relayer: ConnectionOpenConfirm
+    Relayer-&gt;&gt;Chain A: Relay ConnectionOpenConfirm
+
+    Note over Chain A,Chain B: Connection Established
+</pre>
+<p>During this handshake:</p>
+<ol>
+<li>Chain A initiates with ConnectionOpenInit, sending its chain-specific parameters</li>
+<li>Chain B responds with ConnectionOpenTry, verifying Chain A's data and providing its own</li>
+<li>Chain A acknowledges with ConnectionOpenAck, confirming Chain B's information</li>
+<li>Chain B finalizes with ConnectionOpenConfirm, establishing the secure connection</li>
+</ol>
+<p>Once established, this connection can be used for secure cross-chain communication, with both chains able to verify messages using the exchanged parameters and consensus proofs.</p>
+<p>This connection effectively acts as a socket to read and write bytes between the two chains. Although this is powerful, we ideally want a more structured way to communicate, akin to HTTP. For that we use channels.</p>
+<h2 id="multiple-connections"><a class="header" href="#multiple-connections">Multiple Connections</a></h2>
+<p>Usually the relation between chains and connections is one-on-one, meaning that there only exists one connection between two chains. There is nothing preventing multiple from existing however. You will probably see some duplicates for testing reasons: deploying connections while verifiying the actual production one will work.</p>
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'Command')">Fetch Connections</button>
+  <button class="tablinks" onclick="openTab(event, 'Nix')">Nix</button>
+</div>
+<div id="Command" class="tabcontent">
+<pre><code class="language-bash">gq https://development.graphql.union.build/v1/graphql -q '
+{
+  v1_ibc_union_connections(limit: 30) {
+    source_chain {
+      display_name
+    }
+    destination_chain {
+      display_name
+    }
+    source_connection_id
+    destination_connection_id
+  }
+}'
+</code></pre>
+</div>
+<div id="Nix" class="tabcontent">
+<pre><code class="language-bash">nix shell nixpkgs#nodePackages.graphqurl
+</code></pre>
+</div>
+<p>There are uses for multiple connections outside of testing though. Connections may leverage different clients, and thus have different security guarantees. A 'fast' connection could leverage an oracle solution, while the 'slow' connection awaits full finality.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="channels"><a class="header" href="#channels">Channels</a></h1>
+<p>Channels provide an application-level communication protocol built on top of connections. While connections handle the basic secure transport between chains, channels implement message delivery and application-specific logic. Think of channels as dedicated message queues between specific applications on different chains, where messages are typed and have certain effects.</p>
+<pre class="mermaid">sequenceDiagram
+    participant App on Chain A
+    participant Chain A
+    participant Chain B
+    participant App on Chain B
+
+    App on Chain A-&gt;&gt;Chain A: Request channel creation
+    Chain A-&gt;&gt;Chain B: ChanOpenInit
+    Chain B-&gt;&gt;App on Chain B: Notify app
+    Chain B-&gt;&gt;Chain A: ChanOpenTry
+    Chain A-&gt;&gt;Chain B: ChanOpenAck
+    Chain B-&gt;&gt;Chain A: ChanOpenConfirm
+
+    Note over Chain A,Chain B: Channel Established
+
+    App on Chain A-&gt;&gt;Chain A: Send packet
+    Chain A-&gt;&gt;Chain B: Packet transfer
+    Chain B-&gt;&gt;App on Chain B: Deliver packet
+</pre>
+<p>Each channel has key properties:</p>
+<ul>
+<li>Ordering: Controls packet delivery (ordered, unordered, or ordered with timeouts)</li>
+<li>Version: Application-specific string for protocol versioning</li>
+<li>State: Tracks the channel establishment process</li>
+</ul>
+<p>The channel handshake ensures both applications:</p>
+<ol>
+<li>Agree on the version</li>
+<li>Are ready to process packets</li>
+<li>Can verify each other's packet commitments</li>
+</ol>
+<p>Multiple channels can exist over a single connection, each serving different applications. For example, a token transfer application and a governance application could each have their own channel while sharing the underlying secure connection. In general, Union multiplexes traffic over connections and only maintains one connection per chain, while operating many different channels.</p>
+<h2 id="channel-usecases"><a class="header" href="#channel-usecases">Channel Usecases</a></h2>
+<p>Whenever a protocol has a structured message format, it should consider using a specific channel. This is useful for indexers, which use <code>channel.version</code> to read packets for further analysis.</p>
+<p>We can query active channels by running:</p>
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'Command')">Fetch Channels</button>
+  <button class="tablinks" onclick="openTab(event, 'Nix')">Nix</button>
+</div>
+<div id="Command" class="tabcontent">
+<pre><code class="language-bash">gq https://development.graphql.union.build/v1/graphql -q '
+{
+  v1_ibc_union_channels(limit: 30) {
+    source_chain {
+      display_name
+    }
+    destination_chain {
+      display_name
+    }
+    source_channel_id
+	version
+  }
+}
+'
+</code></pre>
+</div>
+<div id="Nix" class="tabcontent">
+<pre><code class="language-bash">nix shell nixpkgs#nodePackages.graphqurl
+</code></pre>
+</div>
+<p>You will probably see <code>ucs03-zkgm-0</code> in the output, which is the multiplexed transfer protocol. Like a swiss-army knife, it works for loads of complex applications. Other common versions are <code>ics20</code>, which is used for legacy asset transfers. With multiplexed, we mean that a single channel serves many applications at the same time.</p>
+<pre class="mermaid">graph TB
+    B1[Token Bridge] &amp; B2[NFT Bridge] &amp; B3[Governance] --- MC[ucs03-zkgm-0]
+    MC --- Chain3[Chain B]
+    Chain3 --- B4[Token Bridge] &amp; B5[NFT Bridge] &amp; B6[Governance]
+</pre>
+<p>In legacy channel configurations, there would be 3 individual channels. Multiplexing offers key advantes:</p>
+<ul>
+<li>Applications do not need to relay their own channels.</li>
+<li>Smart contract developers can leverage enshrined smart contracts.</li>
+<li>The channel implementation can use smart batching to limit the amount of packets necessary.</li>
+</ul>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="packets"><a class="header" href="#packets">Packets</a></h1>
+<p>Packets are the unit of cross-chain communication that carry application data through established channels. For unordered channels, packets can be delivered in any sequence, making them ideal for applications where message ordering isn't critical. Union specifically chose not to support ordered channels due to their poor performance during congestion and incompatibility with fee markets.</p>
+<pre class="mermaid">sequenceDiagram
+    participant App A
+    participant Chain A
+    participant Chain B
+    participant App B
+
+    App A-&gt;&gt;Chain A: Send Packet
+    Note over Chain A: Store Commitment
+    Chain A--&gt;&gt;Chain B: Relay Packet + Proof
+    Note over Chain B: Verify Proof
+    Chain B-&gt;&gt;App B: Execute Packet
+    Note over Chain B: Store Receipt
+    Chain B--&gt;&gt;Chain A: Acknowledge + Proof
+    Note over Chain A: Mark Commitment
+</pre>
+<p>Each packet contains:</p>
+<ul>
+<li>Source channel</li>
+<li>Destination channel</li>
+<li>Timeout height or timestamp</li>
+<li>Data payload</li>
+</ul>
+<p>Packet Lifecycle:</p>
+<ol>
+<li>Application sends data through its channel</li>
+<li>Source chain stores a commitment to the packet</li>
+<li>Relayer delivers packet and proof to destination</li>
+<li>Destination verifies and executes packet</li>
+<li>Relayer returns acknowledgment to source</li>
+<li>Source chain cleans up the commitment</li>
+</ol>
+<p>Timeouts prevent packets from being permanently stuck if the destination chain halts or refuses to process them. When a timeout occurs, the source chain reclaims the packet and notifies the sending application.</p>
+<h2 id="ucs01-zkgm"><a class="header" href="#ucs01-zkgm">ucs01-zkgm</a></h2>
+<p>Union leverages a specialized channel with packet data for asset transfers. While analogous to ics01 in legacy IBC chains, it offers several advantages:</p>
+<ul>
+<li>Multi-Asset transfers</li>
+<li>Open Filling</li>
+<li>Ahead of Finality (AoF) filling</li>
+<li>Routing for GMP</li>
+</ul>
+<p>The packet schema functions as a small program with various instructions executed by the IBC app:</p>
+<pre><code class="language-solidity">struct ZkgmPacket {
+    bytes32 salt;
+    uint256 path;
+    Instruction instruction;
+}
+
+struct Instruction {
+    uint8 version;
+    uint8 opcode;
+    bytes operand;
+}
+</code></pre>
+<p>Instructions use ethabi encoding to structure packets or perform operations. For example, the <code>Forward</code> instruction enables packet forwarding:</p>
+<pre><code class="language-solidity">struct Forward {
+    uint32 channelId;
+    uint64 timeoutHeight;
+    uint64 timeoutTimestamp;
+    Instruction instruction;
+}
+</code></pre>
+<p>The most common instruction is <code>FungibleAssetOrder</code>:</p>
+<pre><code class="language-solidity">struct FungibleAssetOrder {
+    bytes sender;
+    bytes receiver;
+    bytes baseToken;
+    uint256 baseAmount;
+    string baseTokenSymbol;
+    string baseTokenName;
+    uint256 baseTokenPath;
+    bytes quoteToken;
+    uint256 quoteAmount;
+}
+</code></pre>
+<p>This instruction powers the official Union app's bridging functionality. Unlike other bridges, it includes both base and quote information, enabling users to specify desired asset conversions (e.g., USDC to unionUSDC). This design allows <code>FungibleAssetOrder</code> to handle non-equivalent asset swaps when solvers provide liquidity.</p>
+<p>We can see this structure inside the packets live:</p>
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'Command')">Command</button>
+  <button class="tablinks" onclick="openTab(event, 'Nix')">Nix</button>
+</div>
+<div id="Command" class="tabcontent">
+<pre><code class="language-bash">gq https://development.graphql.union.build/v1/graphql -q '
+{
+  v1_ibc_union_packets(limit: 5) {
+    channel_version
+    data_decoded
+  }
+}'
+</code></pre>
+</div>
+<div id="Nix" class="tabcontent">
+<pre><code class="language-bash">nix shell nixpkgs#nodePackages.graphqurl
+</code></pre>
+</div>
+<p>The indexer uses the <code>channel.version</code> to decode the packet and show what is being transmitted. For <code>ucs03-zkgm-0</code>, you should observe something like</p>
+<pre><code>{
+  "data": {
+    "v1_ibc_union_packets": [
+      {
+        "channel_version": "ucs03-zkgm-0",
+        "data_decoded": {
+          "path": "0x0",
+          "salt": "0x0e38c523e23e20f200c0a5b679b2691fcec0bbee7cb6ba293078057de61a8a17",
+          "instruction": {
+            "_index": "",
+            "opcode": 3,
+            "operand": {
+              "_type": "FungibleAssetOrder",
+              "sender": "0x756e696f6e3177386d386e33396778653473746b65343466386a6e6d616b396b337561613971686e72653533",
+              "receiver": "0x73746172733177386d386e33396778653473746b65343466386a6e6d616b396b337561613971666334763333",
+              "baseToken": "0x6d756e6f",
+              "baseAmount": "0x64",
+              "quoteToken": "0x7374617273316d3967657664387574676d6e32686b6e6468737937636b6e7734726c7a656e686e636d6c6a6e6c39656373773066757177763871676e6e727471",
+              "quoteAmount": "0x64",
+              "baseTokenName": "muno",
+              "baseTokenPath": "0x0",
+              "baseTokenSymbol": "muno"
+            },
+            "version": 0,
+            "_instruction_hash": "0x90c591e2f19fc9608d5c88667c3149b10c6ea799cdd1a85c191d759df85448ce"
+          }
+        }
+      },
+      ...
+  ]}
+}
+</code></pre>
+<p>Here we can see a packet with a <code>FungibleAssetOrder</code>, so we know this is funds being transmitted from one chain to another.</p>
+<h3 id="fees"><a class="header" href="#fees">Fees</a></h3>
+<p>Rather than explicitly defining relayer and gas fees, <code>FungibleAssetOrder</code> incentivizes packet processing through the value difference between baseAmount and quoteAmount for equivalent assets:</p>
+<pre><code class="language-solidity">FungibleAssetOrder({
+    ...
+    baseToken: USDC,
+    baseAmount: 100,
+    quoteToken: USDC,
+    quoteAmount: 99,
+})
+</code></pre>
+<p>This example sets a 1 USDC fee independent of the destination chain's gas token. Relayers evaluate packet settlement based on profitability.</p>
+<h3 id="gas-station"><a class="header" href="#gas-station">Gas Station</a></h3>
+<p>The protocol addresses the common challenge of users lacking gas tokens after bridging through a composable instruction system. While some centralized bridges offer unreliable gas services, Union's approach uses the <code>Batch</code> instruction to combine multiple <code>FungibleAssetOrder</code> instructions atomically:</p>
+<pre><code class="language-solidity">struct Batch {
+    Instruction[] instructions;
+}
+</code></pre>
+<p>A transfer with gas deposit combines two orders:</p>
+<pre><code class="language-solidity">Batch({
+    instructions: [
+        FungibleAssetOrder { actualTransferDetails.. },
+        FungibleAssetOrder { baseTokenAmount: 0, quoteToken: $GAS, quoteTokenAmount: 1 },
+    ],
+})
+</code></pre>
+<p>Relayers evaluate the batch's cumulative profit, converting gas tokens to USD value. For instance, if the first order yields 5 USD profit and the second costs 1 $GAS, relayers fulfill the packet when the net profit exceeds their threshold. The smart contract uses the relayer's balance for the gas portion, demonstrating open filling functionality.</p>
+<h3 id="marking-commitments"><a class="header" href="#marking-commitments">Marking Commitments</a></h3>
+<p>Union's approach to handling commitments differs from traditional IBC implementations in an important security aspect. While IBC-classic allows commitments to be cleaned up due to unique sequencing, Union's optimistic packet execution model requires a different approach to prevent potential exploits.</p>
+<h4 id="the-security-challenge"><a class="header" href="#the-security-challenge">The Security Challenge</a></h4>
+<p>A key security vulnerability could arise if commitments were cleaned (deleted) rather than marked:</p>
+<ol>
+<li>An attacker could send a packet</li>
+<li>Get it acknowledged</li>
+<li>Exploit the commitment cleanup to loop this sequence:
+<ul>
+<li>Send the same packet again (generating same hash)</li>
+<li>Get acknowledgment</li>
+<li>Repeat</li>
+</ul>
+</li>
+</ol>
+<p>This attack vector exists because packet hashes can collide when identical packets are sent multiple times, unlike IBC-classic where sequence numbers ensure uniqueness.</p>
+<h4 id="solution-marking-instead-of-cleaning"><a class="header" href="#solution-marking-instead-of-cleaning">Solution: Marking Instead of Cleaning</a></h4>
+<p>To prevent this attack while maintaining optimistic execution, Union:</p>
+<ol>
+<li>Keeps all commitments stored instead of cleaning them</li>
+<li>Marks fulfilled commitments as "acked" rather than deleting them</li>
+<li>Validates against this "acked" status to prevent replay attacks</li>
+</ol>
+<p>This approach:</p>
+<ul>
+<li>Prevents the looping vulnerability</li>
+<li>Only costs about 4k more gas compared to cleaning</li>
+<li>Maintains security without compromising the optimistic execution model</li>
+</ul>
+<p>The gas cost difference is negligible compared to the protocol level advantage that optimistic solving provides.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="clients"><a class="header" href="#clients">Clients</a></h1>
+<p>Clients are modules that track and verify the state of other chains. How they do this varies significantly based on the execution environment of the connected chains. Most clients are implemented as smart contracts.</p>
+<h2 id="core-concepts"><a class="header" href="#core-concepts">Core Concepts</a></h2>
+<p>Every IBC client must provide:</p>
+<ol>
+<li>State tracking of the counterparty chain</li>
+<li>Verification of state updates</li>
+<li>Proof verification for individual transactions/packets</li>
+<li>Misbehavior detection</li>
+</ol>
+<p>However, the implementation details can vary depending on the execution environment (EVM or Move for example).</p>
+<p>We usually refer to both the code and to the instatiation as a client. The best way to grok this, is to see a client
+as both the ERC20 code implementation, and an actual ERC20 coin. There can be many clients on a chain, and new clients can be trustlessly instatiated after the code has been uploaded.</p>
+<h3 id="state-tracking"><a class="header" href="#state-tracking">State Tracking</a></h3>
+<p>Clients must maintain a view of their counterparty chain's state. This typically includes:</p>
+<ul>
+<li>Latest verified header/block height</li>
+<li>Consensus state (if applicable)</li>
+<li>Client-specific parameters like timeout periods</li>
+<li>Commitment roots for verifying packet data</li>
+</ul>
+<p>Much like how an ERC20 contract tracks balances, a client tracks these state components for its specific counterparty chain instance. The client logic defines what state to track, while each client instance maintains its own state values.</p>
+<h3 id="verification"><a class="header" href="#verification">Verification</a></h3>
+<p>Verification is how clients validate state updates from their counterparty chain. This process varies dramatically based on the chain's architecture:</p>
+<ul>
+<li>Tendermint chains verify through validator signatures</li>
+<li>Ethereum clients check PoW/PoS consensus rules</li>
+<li>L2s might verify through their parent chain's mechanisms</li>
+</ul>
+<p>The client code implements the verification rules, while each instance enforces these rules on its specific counterparty chain's updates.</p>
+<h3 id="inclusion-proofs"><a class="header" href="#inclusion-proofs">Inclusion Proofs</a></h3>
+<p>Clients must verify proofs that specific transactions or packets were included in the counterparty chain's state. This involves:</p>
+<ol>
+<li>Verifying the proof format matches the counterparty's tree structure</li>
+<li>Checking the proof against the stored commitment root</li>
+<li>Validating the claimed data matches the proof</li>
+</ol>
+<p>For example:</p>
+<ul>
+<li>Tendermint chains use IAVL+ tree proofs</li>
+<li>Ethereum uses Merkle Patricia proofs</li>
+<li>Some L2s use their own specialized proof formats</li>
+</ul>
+<h3 id="misbehavior-detection"><a class="header" href="#misbehavior-detection">Misbehavior Detection</a></h3>
+<p>Clients implement rules to detect and handle misbehavior from their counterparty chains. Common types include:</p>
+<ol>
+<li><strong>Double signing</strong> - Same height with different state roots</li>
+<li><strong>Invalid state transitions</strong> - Consensus rule violations</li>
+<li><strong>Timeout violations</strong> - Not responding within parameters</li>
+</ol>
+<p>When misbehavior is detected, clients can:</p>
+<ul>
+<li>Freeze to prevent further packet processing</li>
+<li>Allow governance intervention</li>
+<li>Implement automatic resolution mechanisms</li>
+</ul>
+<p>Just as each ERC20 instance can be frozen independently, each client instance handles misbehavior for its specific counterparty chain relationship.</p>
+<h2 id="implementations"><a class="header" href="#implementations">Implementations</a></h2>
+<p>Clients are the most complex portion of how IBC works. Implementations depend on deep cryptographic and algorithmic knowledge of consensus verification. Later we will describe how to implement one, but for now it is better to understand the protocol in full.</p>
+<p>We can query for current live clients by running:</p>
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'Command')">Fetch Clients</button>
+  <button class="tablinks" onclick="openTab(event, 'Nix')">Nix</button>
+</div>
+<div id="Command" class="tabcontent">
+<pre><code class="language-bash">gq https://development.graphql.union.build/v1/graphql -q '
+{
+  v1_ibc_union_clients(limit: 3) {
+    client_id
+    chain {
+      display_name
+    }
+    counterparty_chain {
+      display_name
+    }
+  }
+}'
+</code></pre>
+</div>
+<div id="Nix" class="tabcontent">
+<pre><code class="language-bash">nix shell nixpkgs#nodePackages.graphqurl
+</code></pre>
+</div>
+<p>This provides information for which client is live on which chain, and what other chain it is tracking.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="open-filling"><a class="header" href="#open-filling">Open Filling</a></h1>
+<h2 id="traditional-bridge-models"><a class="header" href="#traditional-bridge-models">Traditional Bridge Models</a></h2>
+<p>Traditional bridge protocols typically handle transfers through a single mechanism per token:</p>
+<ul>
+<li><strong>Mint/Burn</strong>: The bridge mints a specific token on the destination chain</li>
+<li><strong>Locked Pools</strong>: Assets are locked in token-specific pools</li>
+<li><strong>Solver Networks</strong>: Solvers provide liquidity for particular tokens</li>
+</ul>
+<p>Each model handles one token type at a time, requiring multiple separate transfers for different assets, and quite often requiring users to switch between various bridges.</p>
+<p>One step forward in making the bridge model more flexible, is to separate the relaying of information from the actual fullfilment of an order. The bridge protocol focusses on providing the initial data and relaying the acknowledgement, while different implementations can exist to actually provide the assets. We refer to this model as open filling.</p>
+<p>We shall see that open filling has advantages in flexibility and can make better use of local optimizations. On some chains, liquidity pools may be abundant, while on others, the solver market is more mature. Open filling allows bridges to adjust to these market realities.</p>
+<h2 id="open-filling-1"><a class="header" href="#open-filling-1">Open Filling</a></h2>
+<p>Union introduces "open filling" where a the assets in a transfer can be provided in various ways, while still guaranteeing the atomic execution of the packet:</p>
+<ol>
+<li>A single transfer can include multiple different tokens</li>
+<li>Each token can use its own fill mechanism</li>
+<li>All fills are composed atomically in one transaction</li>
+</ol>
+<pre class="mermaid">graph TD
+    A[User Transfer Request: Value X] --&gt; B[FungibleAssetPacket]
+    B --&gt; C[100 USDC from Bridge]
+    B --&gt; D[0.015 BTC from Solver]
+    B --&gt; E[10 BABY from Pool]
+    C --&gt; F[Atomic Completion]
+    D --&gt; F
+    E --&gt; F
+</pre>
+<p>Besides flexibility, open filling can be used to implement features which traditionally we do not consider a core bridging service. One such feature we already encountered: <a href="union/union/packets">gas station</a>. We could also leverage this to implement an exchange, by specifying non-equivalent base and quote assets:</p>
+<pre><code class="language-solidity">FungibleAssetOrder { baseToken: USD baseTokenAmount: 100000, quoteToken: BTC, quoteTokenAmount: 1 },
+</code></pre>
+<p>Given this order, the only way to fill is for the relayer to either swap USD in a dex for BTC, or to provide 1BTC itself and keep the $100,000. With open filling, we do not care about the implementation detail (and can support both at the same time).</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="union-relayer"><a class="header" href="#union-relayer">Union Relayer</a></h1>
+<p>The Union IBC relayer is the infrastructure component that performs the I/O and transaction submissions. Think of it as a blockchain postal service - monitoring, packaging, and delivering messages between chains. It connects to various RPCs to detect new blocks and users interacting with IBC contracts, to then generate proofs and submit transactions to destination chains.</p>
+<h2 id="how-messages-flow"><a class="header" href="#how-messages-flow">How Messages Flow</a></h2>
+<p>Let's walk through the process of how a message moves between chains using the relayer:</p>
+<ol>
+<li>A user submits a message on Chain A</li>
+<li>Chain A stores the message and emits an event</li>
+<li>The relayer detects this event</li>
+<li>The relayer queries Chain A to generate a consensus proof</li>
+<li>The relayer submits the proof and message to Chain B</li>
+<li>Chain B verifies and executes the message</li>
+<li>The relayer queries Chain B to generate a consensus proof</li>
+<li>The relayer confirms receipt back to Chain A using 7.</li>
+</ol>
+<p>Depending on the packets being relayed, the relayer may earn a fee. <code>ICS20</code> allows for 'tipping' the relayer, while Union chooses a UTXO style model, which means that the relayer earns the leftover assets after a transfer occurs. Frontends usually display this as a fee to the user, but under the hood they construct a <code>Batch</code> of <code>FungibleAssetOrder</code>s where the quote side will be zero, effectively tipping the relayer.</p>
+<h2 id="core-functions"><a class="header" href="#core-functions">Core Functions</a></h2>
+<h3 id="chain-monitoring"><a class="header" href="#chain-monitoring">Chain Monitoring</a></h3>
+<p>The relayer maintains active connections to multiple blockchain networks simultaneously. For each chain, it:</p>
+<ul>
+<li>Subscribes to new blocks and events</li>
+<li>Tracks block confirmations</li>
+<li>Monitors chain health and consensus status</li>
+<li>Connects to a prover service</li>
+</ul>
+<p>Chain monitoring must be highly reliable as missed events could lead to stuck packets. The relayer implements sophisticated retry and recovery mechanisms.</p>
+<h3 id="proof-generation-and-verification"><a class="header" href="#proof-generation-and-verification">Proof Generation and Verification</a></h3>
+<p>For each supported chain pair, the relayer leverages a proving service to generate the actual proofs. It collects the public and private inputs before making the API call.</p>
+<p>The reason relaying and proving is separated out over this interface, is because relaying is an I/O heavy operation, that requires fast internet access, while proving is a compute heavy operation. Proving can also be distributed over various machines, which the API abstracts over. That way, the relayer does not need to know the proving implementation.</p>
+<h2 id="implementations-1"><a class="header" href="#implementations-1">Implementations</a></h2>
+<p>There are three major IBC relayer implementations:</p>
+<ul>
+<li><a href="https://github.com/informalsystems/hermes">Hermes</a></li>
+<li><a href="https://github.com/cosmos/relayer">Go Relayer</a></li>
+<li><a href="https://github.com/unionlabs/union/tree/main/voyager">Voyager</a></li>
+</ul>
+<p>We will discuss Voyager's architecture in this book, as it is the most flexible to extensions and supports the widest array of implementations.</p>
+<h3 id="architecture"><a class="header" href="#architecture">Architecture</a></h3>
+<p>Voyager leverages a stateless, message based architecture. Internally it leverages [PostgresSQL] to maintain a queue of events, and tasks to execute. Each RPC call to fetch data, transaction to be submitted, timer or error encountered is represented by a JSON stored in the database.</p>
+<h4 id="plugins"><a class="header" href="#plugins">Plugins</a></h4>
+<p>Voyager leverages various plugins to submit transactions, handle new types of chains, and inspect the intermediate state of packets for filtering or modification.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="addresses"><a class="header" href="#addresses">Addresses</a></h1>
+<p>One would think that addresses would be resolved by now and chains would have uniform handling of this by now. That is not the case at all.</p>
+<p>For a formal specification of how Union handles addresses, check the <a href="https://docs.union.build/concepts/address-types/">docs</a>.</p>
+<h2 id="tldr"><a class="header" href="#tldr">TLDR</a></h2>
+<p>Cosmos addresses use bech32 encoding with this format:</p>
+<pre><code>{HRP}1{address}{checksum}
+</code></pre>
+<p>The human readable part (hrp) differentiates between chains (like <code>union</code> or <code>stars</code>). It's followed by the number 1, then the address, and finally a 6 byte checksum.</p>
+<p>When querying transfers across multiple chains for address <code>union1abc...123</code>, searching for that specific string would miss transfers from the same address on other chains like <code>stars1abc...xyz</code>.</p>
+<p>Union's SDKs and APIs solve this by supporting searches by:</p>
+<ul>
+<li><code>display</code> style (chain-specific format shown in browsers)</li>
+<li><code>canonical</code> format (without hrp/chain-specific info)</li>
+</ul>
+<p>You can query the API to see all versions of an address:</p>
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'Command')">Convert Address</button>
+  <button class="tablinks" onclick="openTab(event, 'Nix')">Nix</button>
+</div>
+<div id="Command" class="tabcontent">
+<pre><code class="language-bash">gq https://development.graphql.union.build/v1/graphql -q '
+{
+  get_address_types_for_display_address(
+      args: { display_address: "union1d03cn520attx29qugxh4wcyqm9r747j64ahcj3" }
+  ) {
+    display
+    canonical
+    zkgm
+  }
+}
+'
+</code></pre>
+</div>
+<div id="Nix" class="tabcontent">
+<pre><code class="language-bash">nix shell nixpkgs#nodePackages.graphqurl
+</code></pre>
+</div>
+<p>Your query should return exactly the following data.</p>
+<pre><code>{
+  "data": {
+    "get_address_types_for_display_address": [
+      {
+        "display": "union1d03cn520attx29qugxh4wcyqm9r747j64ahcj3",
+        "canonical": "0x6be389d14fead665141c41af576080d947eafa5a",
+        "zkgm": "0x756e696f6e31643033636e353230617474783239717567786834776379716d39723734376a36346168636a33"
+      }
+    ]
+  }
+}
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="chain-ids"><a class="header" href="#chain-ids">Chain IDs</a></h1>
+<p>Most blockchains use a unique identifier (like Ethereum's <code>1</code>) to protect users against replay attacks and help wallets select the correct chain. Applications typically assume these IDs are globally unique across both mainnet and testnets. For example, Sepolia uses <code>11155111</code>, while Ethereum mainnet uses <code>1</code>.</p>
+<p>Initially, Union also used these 'canonical' identifiers, but this approach revealed a critical issue: chain IDs aren't actually unique across different blockchain ecosystems. For instance, Aptos also uses ID <code>1</code>, creating potential security vulnerabilities like replay attacks, especially for EVM-compatible Move-based chains.</p>
+<p>To address this problem, Union implemented a more robust format:</p>
+<pre><code>{ hrp }.{ chainId }
+</code></pre>
+<p>In this structure, <code>chainId</code> represents how a chain identifies itself, while <code>hrp</code> (human-readable part) provides a recognizable prefix. For example, Union's testnet is identified as <code>union.union-testnet-10</code>.</p>
+<p>This approach ensures true uniqueness across blockchain ecosystems while maintaining compatibility with existing systems.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="project-nexus"><a class="header" href="#project-nexus">Project: Nexus</a></h1>
+<p>In this project, we will implement the basics of a multichain decentralized exchange (dex). We will allow users to swap assets by trading against solvers. Our exchange is thus an intent-based protocol.</p>
+<h2 id="functionality"><a class="header" href="#functionality">Functionality</a></h2>
+<p>Our application will have the following functionality:</p>
+<ul>
+<li>Swaps: choose assets.</li>
+<li>Bridge: choose destination chain.</li>
+<li>History: track historic trades</li>
+</ul>
+<p>We will focus on implementing the logic only. Frontend, design and UX will not be covered (although we'd gladly accept PRs to expand the guide).</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="architecture-1"><a class="header" href="#architecture-1">Architecture</a></h1>
+<p>We will refer to our exchange as <code>Nexus</code>, since Nex rhymes with Dex, it is short and memeable.
+From a high level, our project will function approximately like so:</p>
+<pre class="mermaid">flowchart LR
+    Frontend(Frontend App)
+    subgraph SourceChain[&quot;Source Chain&quot;]
+        SourceContract(Nexus)
+        SourceUnion(Union)
+    end
+
+    subgraph DestinationChain[&quot;Destination Chain&quot;]
+        DestContract(Union)
+    end
+
+    subgraph Data[&quot;Indexing Layer&quot;]
+        GraphQL(Union GraphQL API)
+    end
+
+    subgraph Solvers[&quot;Solver Layer&quot;]
+        Solver(Voyager Plugin)
+    end
+
+    Frontend --&gt; |Submit Order| SourceContract
+    Frontend --&gt; |Query History| GraphQL
+    SourceContract --&gt; |Forward Order| SourceUnion
+    SourceUnion --&gt; |Route Order| Solver
+    Solver --&gt; |Settle| DestContract
+
+    SourceContract -.-&gt; |indexes| GraphQL
+    DestContract -.-&gt; |indexes| GraphQL
+</pre>
+<p>We will focus on how to submit orders to <code>Nexus</code>, call the Union solidity API, and track order fullfilment. Finally we shall implement a <code>Voyager</code> plugin to
+specifically solve for our protocol.</p>
+<h2 id="requirements"><a class="header" href="#requirements">Requirements</a></h2>
+<p>Our app will focus on two core operations:</p>
+<ul>
+<li>Swaps: Trade between any ERC20 tokens supported by our solvers</li>
+<li>Bridge: Move assets between supported chains, with the ability to swap during the bridge</li>
+</ul>
+<p>Each operation will maintain comprehensive historical data tracking user trades, token amounts, prices at execution time, and transaction status. This data will be used for:</p>
+<ul>
+<li>Displaying trade history</li>
+<li>Calculating PnL across chains</li>
+<li>Analyzing user trading patterns</li>
+</ul>
+<h2 id="swaps"><a class="header" href="#swaps">Swaps</a></h2>
+<p>For our swaps, we will for now not rely on liquidity pools directly. Instead we will assume that our solver manages inventory efficiently. The solver may
+integrate with DEXes and choose to leverage centralized exchanges too.</p>
+<h2 id="bridge"><a class="header" href="#bridge">Bridge</a></h2>
+<p>Our bridge functionality is simple: we will allow a user to select what chain to start at, and which chain to end at.
+Since we are building a multichain exchange, we will not allow swaps without bridging for now, although that will be relatively trivial to add.</p>
+<h2 id="historic-data"><a class="header" href="#historic-data">Historic data</a></h2>
+<p>We will query the Union graphql API for data related to our contracts and users. For now we do not store them in another database, although if we want to do advanced analysis, that'd be the next step.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="swaps-1"><a class="header" href="#swaps-1">Swaps</a></h1>
+<p>Our swaps implementation consists of two main components. (1). Typescript code calling our exchange contract, which then (2). turns the order into a set of <code>FungibleAssetOrder</code>s and submits it to the Union contract. We do not directly call the Union contract, because we want our own interface to provide a nice API for other smart contracts to use, as well as potentially build in governance controls.</p>
+<h2 id="project-setup"><a class="header" href="#project-setup">Project Setup</a></h2>
+<p>Start by creating a flake.nix. We will be using <code>foundry</code> and using our flake to manage the environment.</p>
+<pre><code class="language-nix">{
+  description = "Project Nexus";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+    foundry.url = "github:shazow/foundry.nix";
+  };
+
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+      foundry,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [ foundry.overlay ];
+        };
+      in
+      {
+        devShells.default = pkgs.mkShell {
+          buildInputs = [
+            pkgs.foundry-bin # Provides forge, cast, anvil, etc.
+          ];
+        };
+      }
+    );
+}
+</code></pre>
+<p>Now you can run <code>nix develop</code> to activate the local environment and use <code>forge</code> and other tools. Verify the installation succeeded by running <code>forge init nexus</code>.</p>
+<p>Next we need to install the Union evm contracts.</p>
+<pre><code class="language-bash">forge install OpenZeppelin/openzeppelin-contracts
+forge install unionlabs/union@5f4607a0cba6b8db1991b1d24f08605e9ba8600e
+</code></pre>
+<p>You can choose a more recent commit hash as well by navigating to the Union <a href="https://github.com/unionlabs/union">monorepo</a>.</p>
+<h2 id="nexus-smart-contract"><a class="header" href="#nexus-smart-contract">Nexus Smart Contract</a></h2>
+<p>Our smart contact will have a few functions, but the most important one is the simple <code>swap</code> function, which accepts and <code>Order</code> and executes it.</p>
+<pre><code class="language-solidity">struct Order {
+    uint32 destinationChainId;
+    bytes receiver;
+    address baseToken;
+    uint256 baseAmount;
+    bytes quoteToken;
+    uint256 quoteAmount;
+    bytes32 salt;
+    uint64 timeoutTimestamp;
+}
+</code></pre>
+<p>Our order specifies the <code>destinationChainId</code>, which is where the user wants to receive their tokens. The <code>salt</code> is added to allow for orders of exactly the same amount and assets to function, since Union hashes orders against replay attacks, we need a way to alter that hash.</p>
+<p>Next our swap function:</p>
+<pre><code class="language-solidity">function swap(Order memory order) public {
+    // 1. Get channel ID for destination chain
+    // 2. Transfer tokens from user to contract
+    // 3. Create fungible asset order instruction
+    // 4. Call zkgm contract
+</code></pre>
+<p>We need to implement the 4 steps in our example.</p>
+<h3 id="chain-id-to-channel-mapping"><a class="header" href="#chain-id-to-channel-mapping">Chain ID to Channel Mapping</a></h3>
+<p>First, we need to map destination chain IDs to Union channel IDs. Union uses channels to route orders between chains. We could compute this on the frontend when submitting orders, but we want Nexus to be callable by other smart contracts as well, hence why we store the mapping.</p>
+<pre><code class="language-solidity">mapping(uint32 =&gt; uint32) public destinationToChannel;
+
+...
+
+function setChannelId(uint32 destinationChainId, uint32 channelId) external onlyOwner {
+    destinationToChannel[destinationChainId] = channelId;
+}
+
+</code></pre>
+<h3 id="token-transfer"><a class="header" href="#token-transfer">Token Transfer</a></h3>
+<p>Next, we need to handle the ERC20 token transfer from user to Nexus contract:</p>
+<pre><code class="language-solidity">function swap(Order memory order) public {
+        // 1. Get channel ID for destination chain
+        uint32 channelId = destinationToChannel[order.destinationChainId];
+        require(channelId != 0, "Invalid destination chain");
+
+        // 2. Transfer tokens from user to contract
+        IERC20(order.baseToken).safeTransferFrom(
+            msg.sender,
+            address(this),
+            order.baseAmount
+        );
+}
+</code></pre>
+<p>Currently we assume the tokens will always be ERC20, which means that we cannot support native Eth. Union's transfer app handles this by optionally performing <a href="https://github.com/unionlabs/union/blob/5f4607a0cba6b8db1991b1d24f08605e9ba8600e/evm/contracts/apps/ucs/03-zkgm/Zkgm.sol#L492C13-L492C17">wrapping</a> for the user. This is a good addtion to the protocol to implement in a v2.</p>
+<h3 id="order-instructions"><a class="header" href="#order-instructions">Order Instructions</a></h3>
+<p>Next we will construct our <code>FungibleAssetOrder</code>. We use the values from the channel mapping and the order to create them, it's just a simple format operation.</p>
+<pre><code class="language-solidity">function swap(Order memory order) public {
+        ...
+
+        // 3. Create fungible asset order instruction
+        Instruction memory instruction = zkgm.makeFungibleAssetOrder(
+            0,
+            channelId,
+            msg.sender,
+            order.receiver,
+            order.baseToken,
+            order.baseAmount,
+            order.quoteToken,
+            order.quoteAmount
+        );
+
+}
+</code></pre>
+<h3 id="submit-the-order"><a class="header" href="#submit-the-order">Submit the Order</a></h3>
+<p>To interact with the IBC contract, we will need to store it in our own contract. For now, let's pass it during construction.</p>
+<pre><code class="language-solidity">IZkgm public zkgm;
+
+// Constructor to set the zkgm contract and initialize Ownable
+constructor(address _zkgm) Ownable(msg.sender) {
+    require(_zkgm != address(0), "zkgm address cannot be zero");
+    zkgm = IZkgm(_zkgm);
+}
+</code></pre>
+<p>When submitting the order, we should provide a <code>timeoutTimestamp</code>. If the order isn't completed before the timout, the funds will be refunded. This timeout will ensure that if solvers do not want to handle the order (because of price fluctuations) or if there is an outage on the Union network, the user will still receive their funds.</p>
+<pre><code class="language-solidity">function swap(Order calldata order) external {
+        ...
+        // 4. Call zkgm contract
+        zkgm.send(
+            channelId,
+            order.timeoutTimestamp, // Could be current time + some buffer
+            0, // Optional block timeout
+            order.salt,
+            instruction
+        );
+}
+</code></pre>
+<h2 id="deployment"><a class="header" href="#deployment">Deployment</a></h2>
+<p>Finally we will deploy our contract to Holesky, to interact directly with Union testnet.</p>
+<p>We can obtain the zkgm address (called <strong>ucs03</strong>) from Union's <a href="https://github.com/unionlabs/union/blob/main/deployments/deployments.json">deployment.json</a>.</p>
+<pre><code class="language-bash">forge create \
+    --rpc-url $HOLESKY_RPC_URL \
+    --private-key $PRIVATE_KEY \
+    src/Nexus.sol:Nexus --constructor-args $IBC_HANDLER
+</code></pre>
+<p>This will deploy your contract. You will still need to configure the supported routes. We will do this in the <a href="dex/./dex/sdk.html">SDK</a> section.</p>
+<h2 id="extending-the-contract"><a class="header" href="#extending-the-contract">Extending the Contract</a></h2>
+<p>Once you've completed this part of the project, consider adding some additional features yourself, such as unit tests, events, or bigger features. A full codebase of the above code can be found <a href="https://github.com/unionlabs/goblinbook/tree/main/projects/nexus">here</a>. Feel free to clone and tinker around if you got stuck.</p>
+<h3 id="relayer-fees"><a class="header" href="#relayer-fees">Relayer Fees</a></h3>
+<p>Right now our code relies on the fact that the relayer is paid by the price of the base assets being higher than the quote assets (which means it is a profitable trade for the relayer). If the price delta is too small, relayers will not pick up this order. We could instead use the <code>Batch</code> instruction to include a relayer tip as well.</p>
+<h3 id="supported-assets"><a class="header" href="#supported-assets">Supported Assets</a></h3>
+<p>Nexus will now create orders for any asset, which means that we might receive invalid orders which will always time out. Limiting the assets that we accept will prevent these errors from occuring.</p>
+<h3 id="local-swaps"><a class="header" href="#local-swaps">Local Swaps</a></h3>
+<p>Right now we always submit orders to Union, but if the <code>destinationChainId == localChainId</code>, we could use a local dex instead.</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="sdk"><a class="header" href="#sdk">SDK</a></h1>
+<p>Even though UI and design are out of scope for this guide, we will still go through interacting with our contract from Typescript. The code can be easily used inside React or Svelte applications.</p>
+<h2 id="setup"><a class="header" href="#setup">Setup</a></h2>
+<p>For our Javacript side logic, we will extend our flake.nix with the right tools:</p>
+<pre><code class="language-nix">{
+  description = "Project Nexus";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
+    foundry.url = "github:shazow/foundry.nix";
+  };
+
+  outputs =
+    {
+      self,
+      nixpkgs,
+      flake-utils,
+      foundry,
+    }:
+    flake-utils.lib.eachDefaultSystem (
+      system:
+      let
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [ foundry.overlay ];
+        };
+      in
+      {
+        devShells.default = pkgs.mkShell {
+          buildInputs = [
+            pkgs.foundry-bin # Provides forge, cast, anvil, etc.
+            pkgs.nodejs # Node.js for JavaScript/TypeScript runtime
+            pkgs.nodePackages.typescript # TypeScript compiler (tsc)
+            pkgs.nodePackages.ts-node
+          ];
+        };
+      }
+    );
+}
+</code></pre>
+<p>We can now scaffold our SDK project. Here we use Typescript as it helps us potentially catch more bugs early on.</p>
+<pre><code class="language-bash">nix develop
+mkdir sdk &amp;&amp; cd sdk
+npm init
+tsc --init
+</code></pre>
+<p>Set some sensible values when prompted:</p>
+<pre><code>package name: (nexus) sdk
+version: (1.0.0)
+description: SDK for the Nexus Exchange
+entry point: (index.js)
+test command:
+git repository:
+keywords:
+author:
+license: (ISC) MIT
+</code></pre>
+<p>Next we setup some default file:</p>
+<pre><code class="language-bash">mkdir src
+echo 'console.log("Hello, TypeScript!");' &gt; src/index.ts
+</code></pre>
+<p>As well as that we edit our package.json to configure Typescript. Extend the script section with a build and start script:</p>
+<pre><code class="language-json">"scripts": {
+  "build": "tsc",
+  "start": "ts-node src/index.ts",
+}
+</code></pre>
+<p>We can now run our Typescript code by running</p>
+<pre><code>npm start
+
+&gt; sdk@1.0.0 start
+&gt; ts-node src/index.ts
+
+Hello, TypeScript!
+</code></pre>
+<h2 id="dependencies-and-tools"><a class="header" href="#dependencies-and-tools">Dependencies and Tools</a></h2>
+<p>We'll leverage <code>viem</code> to interact with our contracts. Depending on your frontend framework, you might also want to use <code>wagmi</code> if you are building a frontend application.</p>
+<pre><code class="language-bash">npm install viem
+</code></pre>
+<p>We can now import items from viem and use them. Add the following line to your index.ts.</p>
+<pre><code class="language-typescript">import { createPublicClient, createWalletClient, http, parseAbi } from "viem";
+</code></pre>
+<p>Have a look in the <a href="https://github.com/wevm/viem">viem</a> repository to see what other features are available.</p>
+<h2 id="abi"><a class="header" href="#abi">ABI</a></h2>
+<p>We defined our contract logic already. Next we'll want to generate types to explain how to interact with our contract. We could redefine all the types ourselves, but it is better to parse the ABI:</p>
+<pre><code class="language-typescript">const abi = parseAbi([
+  `struct Order {
+      uint32 destinationChainId,
+      bytes receiver,
+      address baseToken,
+      uint256 baseAmount,
+      bytes quoteToken,
+      uint256 quoteAmount,
+      bytes32 salt
+    }`,
+  `function swap(Order order) external`,
+]);
+</code></pre>
+<p>Here we copied portion's of our ABI in index.ts. Even better is to actually point it to our contracts and generate bindings. For larger contracts and complex codebases, we recommend doing so.</p>
+<h2 id="interacting-with-nexus"><a class="header" href="#interacting-with-nexus">Interacting with Nexus</a></h2>
+<p>In this example, we will start a swap from Ethereum to other chains, so we will instantiate just a single client. In a real app, we would keep a record of chainIds to clients, and use a different client depending on the source chain.</p>
+<pre><code class="language-typescript">import { mainnet } from "viem/chains";
+import { mnemonicToAccount } from "viem/accounts";
+
+const publicClient = createPublicClient({
+  chain: mainnet,
+  transport: http(),
+});
+
+// In a frontend app, we'd use the wallet extension instead of this one.
+const account = mnemonicToAccount(
+  "test test test test test test test test test test test junk",
+);
+const walletClient = createWalletClient({
+  account,
+  chain: mainnet,
+  transport: http(),
+});
+</code></pre>
+<p>Our swap function is a simple contract call. We will first perform a simulation to verify it succeeds. Most likely, users will first need to grant an allowance to the <code>Nexus</code> contract before performing the swap.</p>
+<pre><code class="language-typescript">async function swap(order: Order) {
+  const { request } = await publicClient.simulateContract({
+    address: nexusAddress,
+    abi,
+    functionName: "swap",
+    args: [order],
+  });
+
+  const hash = await walletClient.writeContract(request);
+
+  return hash;
+}
+</code></pre>
+<p>To perform a swap, we call the function:</p>
+<pre><code class="language-typescript">const order = {
+  destinationChainId: 43114,
+  receiver: "0x1234...",
+  baseToken: "0xabcd...",
+  baseAmount: BigInt("1000000000000000000"),
+  quoteToken: "0x5678...",
+  quoteAmount: BigInt("2000000000000000000"),
+  salt: "0x1",
+} as const;
+
+const txHash = await swap(order);
+console.log({ txHash });
+</code></pre>
+<p>Since we do not have a relayer running at the moment for our protocol, this will most likely not be processed. In the next section we shall configure a personal Voyager instance and ensure it has liquidity to solve for our protocol. Currently this call will fail, because we haven't whitelisted any routes yet. We will set that configuration now as well.</p>
+<p>We can fetch 'recommended' channels from the API. Here we are looking for channels which use <code>zkgm</code>. The returned value shows you all available routes starting from Holesky.</p>
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'Command')">Get Routes</button>
+  <button class="tablinks" onclick="openTab(event, 'Nix')">Nix</button>
+</div>
+<div id="Command" class="tabcontent">
+<pre><code class="language-bash">gq https://graphql.union.build/v1/graphql -q '
+{
+  v1_ibc_union_channel_recommendations(where: {source_chain_id: {_eq: "17000"}}) {
+    destination_chain {
+      chain_id
+    }
+    source_chain {
+      chain_id
+    }
+    destination_chain_id
+    destination_channel_id
+    destination_client_id
+    destination_connection_id
+    destination_port_id
+    source_chain_id
+    source_channel_id
+    source_client_id
+    source_connection_id
+    source_port_id
+    status
+    version
+  }
+}'
+</code></pre>
+</div>
+<div id="Nix" class="tabcontent">
+<pre><code class="language-bash">nix shell nixpkgs#nodePackages.graphqurl
+</code></pre>
+</div>
+<p>We can set the route in Nexus by making a call with our deployer private key, using the <code>setChannelId</code> function. We will write a Typescript helperfunction again. First we extend the ABI definition:</p>
+<pre><code class="language-typescript">const abi = parseAbi([
+    ...,
+  `function setChannelId(uint32 destinationChainId, uint32 channelId)`,
+]);
+</code></pre>
+<p>And then we define our helper function:</p>
+<pre><code class="language-typescript">async function setChannelId(destinationChainId: number, channelId: number) {
+  const { request } = await publicClient.simulateContract({
+    address: nexusAddress,
+    abi,
+    functionName: "setChannelId",
+    args: [destinationChainId, channelId],
+  });
+
+  const hash = await walletClient.writeContract(request);
+
+  return hash;
+}
+</code></pre>
+<p>We can call this using our admin private key (update the publicClient) and call the function with the right chainId and channelId to set the route.</p>
+<p>Now our swap function will succeed and enqueue a swap.</p>
+<h2 id="indexing"><a class="header" href="#indexing">Indexing</a></h2>
+<p>Once the swap is enqueued and we receive the <code>txHash</code>, we can monitor it's progression through the indexer. We can query the details using <code>gq</code> again, but we will leave that up for you to figure out.</p>
+<p>Inside our app, we should perodically poll (once every 3 seconds is reasonable). That way, we will see additional traces appear, which we can use to track the transfer progression. For executing the queries, we'll leverage <code>apollo</code>.</p>
+<pre><code class="language-typescript">import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
+
+const client = new ApolloClient({
+  uri: "https://development.graphql.union.build/v1/graphql",
+  cache: new InMemoryCache(),
+});
+
+const PACKET_QUERY = gql`
+  query GetPacket($txHash: String!) {
+    v1_ibc_union_packets(
+      where: { packet_send_transaction_hash: { _eq: $txHash } }
+    ) {
+      source_chain {
+        display_name
+      }
+      destination_chain {
+        display_name
+      }
+      packet_recv_transaction_hash
+      data_decoded
+      traces {
+        type
+        block_hash
+        transaction_hash
+        event_index
+      }
+    }
+  }
+`;
+</code></pre>
+<p>Apollo will so some typechecking and smart caching for us, which is very helpful. Notice how we now pass the <code>txHash</code> as an argument to the <code>PACKET_QUERY</code> as well.</p>
+<p>For our poll function, we will continiously poll until we see the <code>PACKET_RECV</code> trace, which means that the packet has been received on the destination side. In actual frontends, we will want to do something similiar such as periodic polling, but connect these to our effects or stores.</p>
+<pre><code class="language-typescript">async function pollPacketStatus(txHash: string) {
+  const interval = setInterval(async () =&gt; {
+    try {
+      const { data } = await client.query({
+        query: PACKET_QUERY,
+        variables: { txHash },
+        fetchPolicy: "network-only", // Don't use cache
+      });
+
+      const packet = data.v1_ibc_union_packets[0];
+      if (packet) {
+        console.log({ packet });
+
+        // Optional: Stop polling if we see a completion trace
+        if (packet.traces.some((t) =&gt; t.type === "PACKET_RECV")) {
+          clearInterval(interval);
+        }
+      }
+    } catch (error) {
+      console.error("Error polling packet:", error);
+    }
+  }, 3000);
+
+  // Cleanup after 5 minutes to prevent indefinite polling
+  setTimeout(() =&gt; clearInterval(interval), 300000);
+
+  return () =&gt; clearInterval(interval); // Return cleanup function
+}
+
+pollPacketStatus(txHash);
+</code></pre>
+<p>We now have code to submit and track orders. In the next section, we shall see how to inspect historic orders for specific accounts and how to perform aggregate statistics on them.</p>
+<h2 id="next-steps"><a class="header" href="#next-steps">Next Steps</a></h2>
+<p>The Typescript code is still very limited, we lack ways to perform admin specific operations, as well as handling approvals, or querying for whitelisted assets.</p>
+<div style="break-before: page; page-break-before: always;"></div><p>Make sure to DYOR:</p>
+<ul>
+<li><a href="https://docs.union.build">docs.union.build</a></li>
+<li><a href="https://github.com/unionlabs/union">github.com/unionlabs/union</a></li>
+<li><a href="https://github.com/cosmos/ibc">IBC</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="src/static/mermaid.min.js"></script>
+        <script src="src/static/mermaid-init.js"></script>
+        <script src="src/static/tab.js"></script>
+        <script src="src/static/solidity.min.js"></script>
+
+        <script>
+        window.addEventListener('load', function() {
+            window.setTimeout(window.print, 100);
+        });
+        </script>
+
+    </div>
+    </body>
+</html>

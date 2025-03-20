@@ -1,0 +1,51 @@
+.mermaid {
+  visibility: hidden;
+}
+
+.mermaid[data-processed="true"] {
+  visibility: visible;
+}
+
+/* theme/tabs.css */
+.tab {
+  overflow: hidden;
+  border: 1px solid var(--searchbar-border-color);
+  background-color: var(--bg); /* Changed from searchbar-bg to match content */
+  border-radius: 4px 4px 0 0;
+}
+
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 10px 16px;
+  transition: 0.3s;
+  color: var(--fg);
+}
+
+.tab button:hover {
+  background-color: var(--searchbar-border-color);
+}
+
+.tab button.active {
+  background-color: var(--bg);
+  border-bottom: 2px solid var(--links);
+  /* Optional: make active tab more distinct */
+  font-weight: 500;
+}
+
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  border: 1px solid var(--searchbar-border-color);
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  background-color: var(--bg);
+}
+
+/* Optional: Add subtle separators between tabs */
+.tab button:not(:last-child) {
+  border-right: 1px solid var(--searchbar-border-color);
+}

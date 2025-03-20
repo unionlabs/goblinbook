@@ -1,0 +1,397 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Packets - Interop: Principles, Techniques, and Tools</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../src/static/custom.css">
+
+
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">Interop: Principles, Techniques, and Tools</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="packets"><a class="header" href="#packets">Packets</a></h1>
+<p>Packets are the unit of cross-chain communication that carry application data through established channels. For unordered channels, packets can be delivered in any sequence, making them ideal for applications where message ordering isn't critical. Union specifically chose not to support ordered channels due to their poor performance during congestion and incompatibility with fee markets.</p>
+<pre class="mermaid">sequenceDiagram
+    participant App A
+    participant Chain A
+    participant Chain B
+    participant App B
+
+    App A-&gt;&gt;Chain A: Send Packet
+    Note over Chain A: Store Commitment
+    Chain A--&gt;&gt;Chain B: Relay Packet + Proof
+    Note over Chain B: Verify Proof
+    Chain B-&gt;&gt;App B: Execute Packet
+    Note over Chain B: Store Receipt
+    Chain B--&gt;&gt;Chain A: Acknowledge + Proof
+    Note over Chain A: Mark Commitment
+</pre>
+<p>Each packet contains:</p>
+<ul>
+<li>Source channel</li>
+<li>Destination channel</li>
+<li>Timeout height or timestamp</li>
+<li>Data payload</li>
+</ul>
+<p>Packet Lifecycle:</p>
+<ol>
+<li>Application sends data through its channel</li>
+<li>Source chain stores a commitment to the packet</li>
+<li>Relayer delivers packet and proof to destination</li>
+<li>Destination verifies and executes packet</li>
+<li>Relayer returns acknowledgment to source</li>
+<li>Source chain cleans up the commitment</li>
+</ol>
+<p>Timeouts prevent packets from being permanently stuck if the destination chain halts or refuses to process them. When a timeout occurs, the source chain reclaims the packet and notifies the sending application.</p>
+<h2 id="ucs01-zkgm"><a class="header" href="#ucs01-zkgm">ucs01-zkgm</a></h2>
+<p>Union leverages a specialized channel with packet data for asset transfers. While analogous to ics01 in legacy IBC chains, it offers several advantages:</p>
+<ul>
+<li>Multi-Asset transfers</li>
+<li>Open Filling</li>
+<li>Ahead of Finality (AoF) filling</li>
+<li>Routing for GMP</li>
+</ul>
+<p>The packet schema functions as a small program with various instructions executed by the IBC app:</p>
+<pre><code class="language-solidity">struct ZkgmPacket {
+    bytes32 salt;
+    uint256 path;
+    Instruction instruction;
+}
+
+struct Instruction {
+    uint8 version;
+    uint8 opcode;
+    bytes operand;
+}
+</code></pre>
+<p>Instructions use ethabi encoding to structure packets or perform operations. For example, the <code>Forward</code> instruction enables packet forwarding:</p>
+<pre><code class="language-solidity">struct Forward {
+    uint32 channelId;
+    uint64 timeoutHeight;
+    uint64 timeoutTimestamp;
+    Instruction instruction;
+}
+</code></pre>
+<p>The most common instruction is <code>FungibleAssetOrder</code>:</p>
+<pre><code class="language-solidity">struct FungibleAssetOrder {
+    bytes sender;
+    bytes receiver;
+    bytes baseToken;
+    uint256 baseAmount;
+    string baseTokenSymbol;
+    string baseTokenName;
+    uint256 baseTokenPath;
+    bytes quoteToken;
+    uint256 quoteAmount;
+}
+</code></pre>
+<p>This instruction powers the official Union app's bridging functionality. Unlike other bridges, it includes both base and quote information, enabling users to specify desired asset conversions (e.g., USDC to unionUSDC). This design allows <code>FungibleAssetOrder</code> to handle non-equivalent asset swaps when solvers provide liquidity.</p>
+<p>We can see this structure inside the packets live:</p>
+<div class="tab">
+  <button class="tablinks" onclick="openTab(event, 'Command')">Command</button>
+  <button class="tablinks" onclick="openTab(event, 'Nix')">Nix</button>
+</div>
+<div id="Command" class="tabcontent">
+<pre><code class="language-bash">gq https://development.graphql.union.build/v1/graphql -q '
+{
+  v1_ibc_union_packets(limit: 5) {
+    channel_version
+    data_decoded
+  }
+}'
+</code></pre>
+</div>
+<div id="Nix" class="tabcontent">
+<pre><code class="language-bash">nix shell nixpkgs#nodePackages.graphqurl
+</code></pre>
+</div>
+<p>The indexer uses the <code>channel.version</code> to decode the packet and show what is being transmitted. For <code>ucs03-zkgm-0</code>, you should observe something like</p>
+<pre><code>{
+  "data": {
+    "v1_ibc_union_packets": [
+      {
+        "channel_version": "ucs03-zkgm-0",
+        "data_decoded": {
+          "path": "0x0",
+          "salt": "0x0e38c523e23e20f200c0a5b679b2691fcec0bbee7cb6ba293078057de61a8a17",
+          "instruction": {
+            "_index": "",
+            "opcode": 3,
+            "operand": {
+              "_type": "FungibleAssetOrder",
+              "sender": "0x756e696f6e3177386d386e33396778653473746b65343466386a6e6d616b396b337561613971686e72653533",
+              "receiver": "0x73746172733177386d386e33396778653473746b65343466386a6e6d616b396b337561613971666334763333",
+              "baseToken": "0x6d756e6f",
+              "baseAmount": "0x64",
+              "quoteToken": "0x7374617273316d3967657664387574676d6e32686b6e6468737937636b6e7734726c7a656e686e636d6c6a6e6c39656373773066757177763871676e6e727471",
+              "quoteAmount": "0x64",
+              "baseTokenName": "muno",
+              "baseTokenPath": "0x0",
+              "baseTokenSymbol": "muno"
+            },
+            "version": 0,
+            "_instruction_hash": "0x90c591e2f19fc9608d5c88667c3149b10c6ea799cdd1a85c191d759df85448ce"
+          }
+        }
+      },
+      ...
+  ]}
+}
+</code></pre>
+<p>Here we can see a packet with a <code>FungibleAssetOrder</code>, so we know this is funds being transmitted from one chain to another.</p>
+<h3 id="fees"><a class="header" href="#fees">Fees</a></h3>
+<p>Rather than explicitly defining relayer and gas fees, <code>FungibleAssetOrder</code> incentivizes packet processing through the value difference between baseAmount and quoteAmount for equivalent assets:</p>
+<pre><code class="language-solidity">FungibleAssetOrder({
+    ...
+    baseToken: USDC,
+    baseAmount: 100,
+    quoteToken: USDC,
+    quoteAmount: 99,
+})
+</code></pre>
+<p>This example sets a 1 USDC fee independent of the destination chain's gas token. Relayers evaluate packet settlement based on profitability.</p>
+<h3 id="gas-station"><a class="header" href="#gas-station">Gas Station</a></h3>
+<p>The protocol addresses the common challenge of users lacking gas tokens after bridging through a composable instruction system. While some centralized bridges offer unreliable gas services, Union's approach uses the <code>Batch</code> instruction to combine multiple <code>FungibleAssetOrder</code> instructions atomically:</p>
+<pre><code class="language-solidity">struct Batch {
+    Instruction[] instructions;
+}
+</code></pre>
+<p>A transfer with gas deposit combines two orders:</p>
+<pre><code class="language-solidity">Batch({
+    instructions: [
+        FungibleAssetOrder { actualTransferDetails.. },
+        FungibleAssetOrder { baseTokenAmount: 0, quoteToken: $GAS, quoteTokenAmount: 1 },
+    ],
+})
+</code></pre>
+<p>Relayers evaluate the batch's cumulative profit, converting gas tokens to USD value. For instance, if the first order yields 5 USD profit and the second costs 1 $GAS, relayers fulfill the packet when the net profit exceeds their threshold. The smart contract uses the relayer's balance for the gas portion, demonstrating open filling functionality.</p>
+<h3 id="marking-commitments"><a class="header" href="#marking-commitments">Marking Commitments</a></h3>
+<p>Union's approach to handling commitments differs from traditional IBC implementations in an important security aspect. While IBC-classic allows commitments to be cleaned up due to unique sequencing, Union's optimistic packet execution model requires a different approach to prevent potential exploits.</p>
+<h4 id="the-security-challenge"><a class="header" href="#the-security-challenge">The Security Challenge</a></h4>
+<p>A key security vulnerability could arise if commitments were cleaned (deleted) rather than marked:</p>
+<ol>
+<li>An attacker could send a packet</li>
+<li>Get it acknowledged</li>
+<li>Exploit the commitment cleanup to loop this sequence:
+<ul>
+<li>Send the same packet again (generating same hash)</li>
+<li>Get acknowledgment</li>
+<li>Repeat</li>
+</ul>
+</li>
+</ol>
+<p>This attack vector exists because packet hashes can collide when identical packets are sent multiple times, unlike IBC-classic where sequence numbers ensure uniqueness.</p>
+<h4 id="solution-marking-instead-of-cleaning"><a class="header" href="#solution-marking-instead-of-cleaning">Solution: Marking Instead of Cleaning</a></h4>
+<p>To prevent this attack while maintaining optimistic execution, Union:</p>
+<ol>
+<li>Keeps all commitments stored instead of cleaning them</li>
+<li>Marks fulfilled commitments as "acked" rather than deleting them</li>
+<li>Validates against this "acked" status to prevent replay attacks</li>
+</ol>
+<p>This approach:</p>
+<ul>
+<li>Prevents the looping vulnerability</li>
+<li>Only costs about 4k more gas compared to cleaning</li>
+<li>Maintains security without compromising the optimistic execution model</li>
+</ul>
+<p>The gas cost difference is negligible compared to the protocol level advantage that optimistic solving provides.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../union/channels.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../union/clients.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../union/channels.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../union/clients.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../src/static/mermaid.min.js"></script>
+        <script src="../src/static/mermaid-init.js"></script>
+        <script src="../src/static/tab.js"></script>
+        <script src="../src/static/solidity.min.js"></script>
+
+
+    </div>
+    </body>
+</html>

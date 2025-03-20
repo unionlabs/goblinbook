@@ -1,0 +1,6 @@
+{
+  v1_ibc_union_packets(limit: 5) {
+    channel_version
+    data_decoded
+  }
+}

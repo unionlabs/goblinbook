@@ -133,6 +133,8 @@ When we interact with the `send` entrypoint, we submit a program. Union's bridge
 The denomAddress is the ERC20 address of the asset we want to send. You might notice that regular ETH does not have an address, because it is not an ERC20. To perform the transfer, ETH must be wrapped to WETH (optional if you already own WETH):
 
 ```typescript
+{{ #shiftinclude  auto:../projects/asset-dispatcher/src/index.ts:wrapping-imports }}
+
 {{ #shiftinclude  auto:../projects/asset-dispatcher/src/index.ts:wrapping }}
 ```
 

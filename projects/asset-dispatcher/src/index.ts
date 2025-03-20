@@ -1,20 +1,31 @@
+// ANCHOR: managing-wallets-imports
+import { createWalletClient, http } from "npm:viem";
+import { mnemonicToAccount } from "npm:@viem/accounts";
+import { sepolia, holesky } from "npm:viem/chains";
+// ANCHOR_END: managing-wallets-imports
 
-// ANCHOR: imports
-import { holesky, sepolia } from "viem/chains"
-import { mnemonicToAccount } from "viem/accounts"
+// ANCHOR: create-client-imports
+import { createPublicClient, formatEther } from "npm:viem";
+// ANCHOR_END: create-client-imports
 
-import { ucs03abi } from '@unionlabs/sdk/evm/abi';
-import { createPublicClient, createWalletClient, erc20Abi, formatEther, http, parseEther } from "viem";
-import { Batch, FungibleAssetOrder } from "@unionlabs/sdk/evm/ucs03";
-import { generateSalt } from "./salt.js";
-// ANCHOR_END: imports
+// ANCHOR: approvals-imports
+import { erc20Abi } from "viem";
+// ANCHOR_END: approvals-imports
 
+// ANCHOR: send-imports
+import { Batch, FungibleAssetOrder } from "npm:@unionlabs/sdk/evm/ucs03";
+import { ucs03abi } from "npm:@unionlabs/sdk/evm/abi";
+import { toHex, type Hex } from "viem";
+// ANCHOR_END: send-imports
+
+// ANCHOR: wrapping-imports
+import { parseEther } from "viem";
+// ANCHOR_END: wrapping-imports
 
 // @ts-ignore hack to print bigints as JavaScript does not support this by default
-BigInt["prototype"].toJSON = function() {
-  return this.toString()
-}
-
+BigInt["prototype"].toJSON = function () {
+  return this.toString();
+};
 
 async function main() {
   const memo = "memo memo memo memoe";
@@ -78,8 +89,6 @@ async function main() {
   console.log(`Wrapping ETH: ${hash}`);
   // ANCHOR_END: wrapping
 
-
-
   // ANCHOR: approvals
   await sepoliaWallet.writeContract({
     address: "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9",
@@ -89,8 +98,13 @@ async function main() {
   });
   // ANCHOR_END: approvals
 
-
   // ANCHOR: send
+  function generateSalt() {
+    const rawSalt = new Uint8Array(32);
+    crypto.getRandomValues(rawSalt);
+    return toHex(rawSalt) as Hex;
+  }
+
   let transferHash = await sepoliaWallet.writeContract({
     account: sepoliaWallet.account.address as `0x${string}`,
     abi: ucs03abi,

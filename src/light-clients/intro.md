@@ -7,12 +7,13 @@ Trust-minimized interoperability protocols use light clients to secure message p
 A blockchain block typically consists of two main sections:
 
 **Header**: Contains metadata about the block, including:
-  - Block producer information
-  - Block height and timestamp
-  - Previous block hash
-  - State root (a cryptographic summary of the blockchain's state)
-  - Transaction root (a Merkle root of all transactions in the block)
-  - Other consensus-specific data
+
+- Block producer information
+- Block height and timestamp
+- Previous block hash
+- State root (a cryptographic summary of the blockchain's state)
+- Transaction root (a Merkle root of all transactions in the block)
+- Other consensus-specific data
 
 **Body**: Contains the complete list of transactions included in the block.
 
@@ -28,9 +29,9 @@ This efficiency makes light clients ideal for cross-chain communication, mobile 
 Light clients achieve security through cryptographic verification rather than data replication. They:
 
 1. Track validator sets from the source blockchain
-2. Verify consensus signatures on new block headers
-3. Validate state transitions through cryptographic proofs
-4. Maintain only the minimal state required for validation
+1. Verify consensus signatures on new block headers
+1. Validate state transitions through cryptographic proofs
+1. Maintain only the minimal state required for validation
 
 This approach ensures that even with minimal data, light clients can detect invalid or malicious blocks.
 
@@ -57,10 +58,9 @@ This improves both security and user experience by reducing dependency on remote
 Ethereum's light client protocol is particularly significant for Union's architecture. It uses a combination of:
 
 1. **Consensus verification**: Validating signatures from the beacon chain's validator set
-2. **Sync committees**: Tracking rotating sets of validators for efficient verification
-3. **Merkle proofs**: Verifying transaction inclusion and state values without downloading the full state
+1. **Sync committees**: Tracking rotating sets of validators for efficient verification
+1. **Merkle proofs**: Verifying transaction inclusion and state values without downloading the full state
 
 Ethereum light clients can securely validate blocks with just a few kilobytes of data, compared to the hundreds of megabytes required for full validation. This efficiency makes them ideal for cross-chain applications.
 
 In subsequent sections, we'll examine how Union leverages these light client principles to secure cross-chain communication and explore implementation details of the Ethereum light client that secures a significant portion of Union's traffic.
-

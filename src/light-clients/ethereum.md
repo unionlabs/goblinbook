@@ -4,11 +4,11 @@ In this chapter, we will discuss how the Ethereum light client works, as well as
 
 ## Protocol
 
-A light client offers a few public functions that can be called by any party. Each of these functions progresses it's inner state `S`. By this we mean, that calling one of these functions will make the light client store data, which it uses in subsequent operations. 
+A light client offers a few public functions that can be called by any party. Each of these functions progresses it's inner state `S`. By this we mean, that calling one of these functions will make the light client store data, which it uses in subsequent operations.
 
 1. Initialization: can only be called once when creating the client.
-2. Updating: succively called for each block we wish to verify
-3. Freezing: called once in case of misbehaviour.
+1. Updating: succively called for each block we wish to verify
+1. Freezing: called once in case of misbehaviour.
 
 `Initialization` often happens during contract deployment. Here we pass the initial state to the contract. This state either includes the genesis block, or an arbitrary block. We refer to this as the 'trusted height', which is trusted by the client to be a correct block. Often a governance proposal is used to verify that this block is correct before passing it to the light client.
 
@@ -21,8 +21,8 @@ This chapter explores the architecture and operation of the Ethereum light clien
 A light client exposes several public functions that can be invoked by external parties. Each function call modifies the client's internal state `S`, storing critical data that informs subsequent operations. The light client lifecycle can be divided into three distinct phases:
 
 1. **Initialization**: Occurs exactly once when the client is created
-2. **Updating**: Called repeatedly to verify each new block
-3. **Freezing**: Invoked once if malicious behavior is detected
+1. **Updating**: Called repeatedly to verify each new block
+1. **Freezing**: Invoked once if malicious behavior is detected
 
 Initialization typically happens during contract deployment for smart contract-based light clients. During this phase, we provide the client with its initial trusted state, which can be either:
 
@@ -34,14 +34,14 @@ This initial block is known as the "trusted height" and serves as the foundation
 Once initialized, the light client can begin verifying new blocks. The update function accepts a block header and associated cryptographic proofs, then:
 
 1. Verifies the header's cryptographic integrity
-2. Validates the consensus signatures from the validator set
-3. Updates the client's internal state to reflect the new "latest verified block"
+1. Validates the consensus signatures from the validator set
+1. Updates the client's internal state to reflect the new "latest verified block"
 
 Updates can happen in sequence (verifying each block) or can skip intermediate blocks using more complex proof mechanisms. The efficiency of this process is what makes light clients practical for cross-chain communication.
 
 If the light client detects conflicting information or invalid proofs that suggest an attack attempt, it can enter a "frozen" state. This is a safety mechanism that prevents the client from processing potentially fraudulent updates. Recovery from a frozen state typically requires governance intervention.
 
-Since initialization is rather trivial, we will not dive deeper into it. 
+Since initialization is rather trivial, we will not dive deeper into it.
 
 ### Updating
 
@@ -57,9 +57,9 @@ class BeaconBlockBody(Container):
     attestations: List[Attestation, MAX_ATTESTATIONS]
     deposits: List[Deposit, MAX_DEPOSITS]
     voluntary_exits: List[SignedVoluntaryExit, MAX_VOLUNTARY_EXITS]
-    sync_aggregate: SyncAggregate 
-    execution_payload: ExecutionPayload  
-    bls_to_execution_changes: List[SignedBLSToExecutionChange, MAX_BLS_TO_EXECUTION_CHANGES]  
+    sync_aggregate: SyncAggregate
+    execution_payload: ExecutionPayload
+    bls_to_execution_changes: List[SignedBLSToExecutionChange, MAX_BLS_TO_EXECUTION_CHANGES]
 ```
 
 We are specifically interested in `sync_aggregate`, which is a structure describing the votes of the sync committee:
@@ -78,11 +78,11 @@ For our SyncAggregate, computing the aggregate pubkey is simple:
 
 ```python
 def _aggregate_pubkeys(committee, bits)
-        pubkeys = []
-        for i, bit in enumerate(bits):
-            if bit:
-                pubkeys.append(committee[i])
-        return bls.Aggregate(pubkeys)
+    pubkeys = []
+    for i, bit in enumerate(bits):
+        if bit:
+            pubkeys.append(committee[i])
+    return bls.Aggregate(pubkeys)
 ```
 
 At scale, we can aggregate thousands (if not hundreds of thousands) of signatures and public keys, whily only verifying their aggregates.
@@ -92,120 +92,52 @@ To our light client, as long as a majority of sync committee members have attest
 ```python
 class LightClient():
     def update(self, block: BeaconBlockBody):
-        
+
         # Count how many committee members signed
         signature_count = sum(sync_aggregate.sync_committee_bits)
-        
+
         # Need 2/3+ committee participation for finality
         if signature_count < (SYNC_COMMITTEE_SIZE * 2) // 3:
             raise ValueError("Insufficient signatures from sync committee")
-        
+
         # Construct aggregate public key from the current committee and bit vector
         aggregate_pubkey = _aggregate_pubkeys(
-            self.current_sync_committee, 
+            self.current_sync_committee,
             block.sync_aggregate.sync_committee_bits
         )
-        ...
 ```
 
+Now we have the `aggregate_pubkey` for the committee, as well as verified that enough members have signed. Notice that to obtain the sync committee public keys, we used `self.current_sync_committee`. This is set during initialization, and later updated in our `update` function.
 
+Next we have to construct the digest (what has been signed) before we verify the aggregated signature. If we didn't compute the digest ourselfs, but obtained it from the block, then the caller could fraudelenty pass a correct digest, but have other values in the block altered.
 
+```python
+    signing_root = self._compute_signing_root(block)
 
+    # Verify the aggregated signature against the aggregated public key
+    if not bls.Verify(
+        aggregate_pubkey,
+        signing_root,
+        sync_aggregate.sync_committee_signature
+    ):
+        raise ValueError("Invalid sync committee signature")
+```
 
-<!-- 
-class LightClient():
-    def __init__(self):
-        # Initialize with trusted sync committee
-        self.current_sync_committee = None
-        self.next_sync_committee = None
-        self.latest_block_root = None
-        self.latest_slot = 0
-        self.finalized = False
-    
-    def update(self, block: BeaconBlockBody):
-        # Get the sync aggregate from the block
-        sync_aggregate = block.sync_aggregate
-        
-        # Count how many committee members signed
-        signature_count = sum(sync_aggregate.sync_committee_bits)
-        
-        # Need 2/3+ committee participation for finality
-        if signature_count < (SYNC_COMMITTEE_SIZE * 2) // 3:
-            raise ValueError("Insufficient signatures from sync committee")
-        
-        # Construct aggregate public key from the current committee and bit vector
-        aggregate_pubkey = self._aggregate_pubkeys(
-            self.current_sync_committee, 
-            sync_aggregate.sync_committee_bits
-        )
-        
-        # Construct the signing root that validators are supposed to sign
-        signing_root = self._compute_signing_root(block)
-        
-        # Verify the aggregated signature against the aggregated public key
-        if not bls.Verify(
-            aggregate_pubkey,
-            signing_root,
-            sync_aggregate.sync_committee_signature
-        ):
-            raise ValueError("Invalid sync committee signature")
-        
-        # If verification passes, update the light client state
-        self.latest_block_root = self._compute_block_root(block)
-        self.latest_slot = block.slot
-        self.finalized = True
-        
-        # Check if we need to update the sync committee
-        if self._is_sync_committee_period_boundary(block.slot):
-            self._update_sync_committee(block)
-    
-    def _aggregate_pubkeys(self, committee, bits):
-        """Aggregate public keys based on the bitvector."""
-        pubkeys = []
-        for i, bit in enumerate(bits):
-            if bit:
-                pubkeys.append(committee[i])
-        return bls.Aggregate(pubkeys)
-    
-    def _compute_signing_root(self, block):
-        """Compute the signing root that validators are supposed to sign."""
-        # In actual implementation, this would compute the appropriate domain
-        # and combine it with the block root
-        domain = self._get_domain(DOMAIN_SYNC_COMMITTEE, block.slot)
-        return hash_tree_root(SigningData(
-            object_root=self._compute_block_root(block),
-            domain=domain
-        ))
-    
-    def _compute_block_root(self, block):
-        """Compute the root hash of the block."""
-        return hash_tree_root(block)
-    
-    def _get_domain(self, domain_type, slot):
-        """Get the domain for the given domain type and slot."""
-        # In a real implementation, this would compute the correct domain
-        # based on the fork version at the given slot
-        epoch = slot // SLOTS_PER_EPOCH
-        fork_version = self._get_fork_version(epoch)
-        return compute_domain(domain_type, fork_version)
-    
-    def _is_sync_committee_period_boundary(self, slot):
-        """Check if this slot is a sync committee update boundary."""
-        return slot % (SLOTS_PER_EPOCH * EPOCHS_PER_SYNC_COMMITTEE_PERIOD) == 0
-    
-    def _update_sync_committee(self, block):
-        """Update the sync committee using the next sync committee from a block."""
-        # In a real implementation, this would extract the next sync committee
-        # from a specially crafted block update
+Since the signature and block are both valid, we can now trust the contents of the passed beaconblock. Next the lightclient will store data from the block
+
+```python
+    self.latest_block_root = self._compute_block_root(block)
+    self.latest_slot = block.slot
+```
+
+Finally, we have to update the sync committee. The committee rotates every epoch, and thus if this is at the boundary, we have to update these values. Luckily Ethereum makes this easy for us, and provides what the next sync committee will be:
+
+```python
+    if slot % (SLOTS_PER_EPOCH * EPOCHS_PER_SYNC_COMMITTEE_PERIOD) == 0
         self.current_sync_committee = self.next_sync_committee
         self.next_sync_committee = block.next_sync_committee
-    
-    def get_latest_block_root(self):
-        """Return the latest verified block root."""
-        return self.latest_block_root
-    
-    def is_finalized(self):
-        """Check if the light client has a finalized block."""
-        return self.finalized 
+```
 
--->
+`SLOTS_PER_EPOCH` and `EPOCHS_PER_SYNC_COMMITTEE_PERIOD` can be hardcoded, or stored in the light client state.
+
+With this relatively simple protocol, we now have a (python) smart contract that can track Ethereum's blocks.

@@ -1,28 +1,19 @@
 {
-  description = "CLI for Asset Dispatching";
+  description = "Example Union TypeScript SDK usage";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
-    treefmt.url = "github:numtide/treefmt-nix";
   };
+
   outputs =
-    inputs@{
-      self,
-      nixpkgs,
-      flake-parts,
-      treefmt,
-      ...
-    }:
+    inputs@{ flake-parts, nixpkgs, ... }:
     flake-parts.lib.mkFlake { inherit inputs; } {
-      imports = [
-        treefmt.flakeModule
-      ];
       systems = [
         "x86_64-linux"
         "aarch64-linux"
-        "aarch64-darwin"
         "x86_64-darwin"
+        "aarch64-darwin"
       ];
       perSystem =
         {
@@ -30,37 +21,40 @@
           self',
           inputs',
           pkgs,
+          lib,
           system,
           ...
         }:
+        let
+          packageJson = lib.importJSON ./package.json;
+        in
         {
-          devShells = {
-            default = pkgs.mkShell {
-              buildInputs =
-                [
-                  pkgs.deno
-                  pkgs.supabase-cli
-                ]
-                ++ (pkgs.lib.optionals pkgs.stdenv.isDarwin (with pkgs.darwin.apple_sdk.frameworks; [ Security ]));
+          packages = {
+            default = pkgs.buildNpmPackage {
+              pname = packageJson.name;
+              inherit (packageJson) version;
+              src = ./.;
+              npmDepsHash = "sha256-ZN47MDJes95+CXBoPaN4blpxP12ZS6trnUtm0+tYTqo=";
+
+              postInstall = ''
+                mkdir -p $out/bin
+                cat > $out/bin/${packageJson.name} << EOF
+                #!/usr/bin/env node
+                require('../lib/node_modules/${packageJson.name}/dist/src/index.js')
+                EOF
+                chmod +x $out/bin/${packageJson.name}
+              '';
             };
           };
-          treefmt = {
-            projectRootFile = "flake.nix";
-            programs.nixfmt.enable = pkgs.lib.meta.availableOn pkgs.stdenv.buildPlatform pkgs.nixfmt-rfc-style.compiler;
-            programs.nixfmt.package = pkgs.nixfmt-rfc-style;
-            programs.deno.enable = true;
-            programs.mdformat.enable = true;
+
+          devShells.default = pkgs.mkShell {
+            buildInputs = with pkgs; [
+              nodejs
+              nodePackages_latest.typescript-language-server
+              biome
+              nixfmt
+            ];
           };
         };
     };
-  nixConfig = {
-    extra-substituters = [
-      "https://union.cachix.org/"
-      "https://cache.garnix.io"
-    ];
-    extra-trusted-public-keys = [
-      "union.cachix.org-1:TV9o8jexzNVbM1VNBOq9fu8NK+hL6ZhOyOh0quATy+M="
-      "cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g="
-    ];
-  };
 }

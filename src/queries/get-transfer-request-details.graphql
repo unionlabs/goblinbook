@@ -1,4 +1,4 @@
-{
+query GetTransferRequestDetails {
     get_transfer_request_details(args:{
         p_source_universal_chain_id: "ethereum.11155111",
         p_destination_universal_chain_id: "ethereum.17000",

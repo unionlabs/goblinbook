@@ -1,17 +1,3 @@
-# Ethereum
-
-In this chapter, we will discuss how the Ethereum light client works, as well as some advanced computer science concepts to understand why our (cryptographic) proofs are correct. We will start by analyzing the light client from afar, observing the full protocol, and then inspecting each individual step.
-
-## Protocol
-
-A light client offers a few public functions that can be called by any party. Each of these functions progresses it's inner state `S`. By this we mean, that calling one of these functions will make the light client store data, which it uses in subsequent operations.
-
-1. Initialization: can only be called once when creating the client.
-1. Updating: succively called for each block we wish to verify
-1. Freezing: called once in case of misbehaviour.
-
-`Initialization` often happens during contract deployment. Here we pass the initial state to the contract. This state either includes the genesis block, or an arbitrary block. We refer to this as the 'trusted height', which is trusted by the client to be a correct block. Often a governance proposal is used to verify that this block is correct before passing it to the light client.
-
 # Ethereum Light Client
 
 This chapter explores the architecture and operation of the Ethereum light client, along with the cryptographic foundations that ensure the validity of its proofs. We'll begin with a high-level overview of the protocol before diving into the technical details of each component.
@@ -34,7 +20,7 @@ This initial block is known as the "trusted height" and serves as the foundation
 Once initialized, the light client can begin verifying new blocks. The update function accepts a block header and associated cryptographic proofs, then:
 
 1. Verifies the header's cryptographic integrity
-1. Validates the consensus signatures from the validator set
+1. Validates the consensus signatures from the sync committee
 1. Updates the client's internal state to reflect the new "latest verified block"
 
 Updates can happen in sequence (verifying each block) or can skip intermediate blocks using more complex proof mechanisms. The efficiency of this process is what makes light clients practical for cross-chain communication.
@@ -45,7 +31,7 @@ Since initialization is rather trivial, we will not dive deeper into it.
 
 ### Updating
 
-Since Ethereum is finalized by the beaconchain, our Ethereum light client accepts beacon block data as update input. A [beacon block](https://eth2book.info/capella/part3/containers/blocks/#beacon-blocks) rougly has this structure:
+Since Ethereum is finalized by the Beacon Chain, our Ethereum light client accepts beacon block data as update input. A [beacon block](https://eth2book.info/capella/part3/containers/blocks/#beacon-blocks) roughly has this structure:
 
 ```python
 class BeaconBlockBody(Container):
@@ -70,7 +56,7 @@ class SyncAggregate(Container):
     sync_committee_signature: BLSSignature
 ```
 
-The `sync_committee_bits` indicate which members voted (not all need to vote), and the `sync_committee_signature` is a BLS signature of the members references in the bit vector.
+The `sync_committee_bits` indicate which members voted (not all need to vote), and the `sync_committee_signature` is a BLS signature of the members referenced in the bit vector.
 
 BLS signatures (Boneh-Lynn-Shacham) are a type of cryptographic signature scheme that allows multiple signatures to be aggregated into a single signature. This makes them space and compute efficient (you can aggregate hundreds of signatures into one). Just as we aggregate signatures, we can aggregate public keys as well, such that the aggregate public key can verify the aggregated signature.
 
@@ -85,9 +71,9 @@ def _aggregate_pubkeys(committee, bits)
     return bls.Aggregate(pubkeys)
 ```
 
-At scale, we can aggregate thousands (if not hundreds of thousands) of signatures and public keys, whily only verifying their aggregates.
+At scale, we can aggregate thousands (if not hundreds of thousands) of signatures and public keys, while only verifying their aggregates.
 
-To our light client, as long as a majority of sync committee members have attested the block, it is consider final.
+To our light client, as long as a majority of sync committee members have attested the block, it is considered final.
 
 ```python
 class LightClient():
@@ -107,9 +93,9 @@ class LightClient():
         )
 ```
 
-Now we have the `aggregate_pubkey` for the committee, as well as verified that enough members have signed. Notice that to obtain the sync committee public keys, we used `self.current_sync_committee`. This is set during initialization, and later updated in our `update` function.
+Now we have the `aggregate_pubkey` for the committee, as well as verifying that enough members have signed. Notice that to obtain the sync committee public keys, we used `self.current_sync_committee`. This is set during initialization, and later updated in our `update` function.
 
-Next we have to construct the digest (what has been signed) before we verify the aggregated signature. If we didn't compute the digest ourselfs, but obtained it from the block, then the caller could fraudelenty pass a correct digest, but have other values in the block altered.
+Next we have to construct the digest (what has been signed) before we verify the aggregated signature. If we didn't compute the digest ourselves, but obtained it from the block, then the caller could fraudulently pass a correct digest, but have other values in the block altered.
 
 ```python
     signing_root = self._compute_signing_root(block)
@@ -123,21 +109,29 @@ Next we have to construct the digest (what has been signed) before we verify the
         raise ValueError("Invalid sync committee signature")
 ```
 
-Since the signature and block are both valid, we can now trust the contents of the passed beaconblock. Next the lightclient will store data from the block
+Since the signature and block are both valid, we can now trust the contents of the passed beacon block. Next the light client will store data from the block:
 
 ```python
     self.latest_block_root = self._compute_block_root(block)
     self.latest_slot = block.slot
 ```
 
-Finally, we have to update the sync committee. The committee rotates every epoch, and thus if this is at the boundary, we have to update these values. Luckily Ethereum makes this easy for us, and provides what the next sync committee will be:
+Finally, we have to update the sync committee. The committee rotates every sync committee period (256 epochs), and thus if this is at the boundary, we have to update these values. Luckily Ethereum makes this easy for us, and provides what the next sync committee will be:
 
 ```python
-    if slot % (SLOTS_PER_EPOCH * EPOCHS_PER_SYNC_COMMITTEE_PERIOD) == 0
+    if slot % (SLOTS_PER_EPOCH * EPOCHS_PER_SYNC_COMMITTEE_PERIOD) == 0:
         self.current_sync_committee = self.next_sync_committee
         self.next_sync_committee = block.next_sync_committee
 ```
 
-`SLOTS_PER_EPOCH` and `EPOCHS_PER_SYNC_COMMITTEE_PERIOD` can be hardcoded, or stored in the light client state.
+`SLOTS_PER_EPOCH` and `EPOCHS_PER_SYNC_COMMITTEE_PERIOD` can be hardcoded, or stored in the light client state. Each epoch is 32 slots (approximately 6.4 minutes), so a full sync committee period lasts about 27.3 hours.
 
 With this relatively simple protocol, we now have a (python) smart contract that can track Ethereum's blocks.
+
+### Optimizations
+
+In actuality, the beacon block is still too large for a light client. The actual light client uses the [`LightClientHeader`](https://github.com/unionlabs/union/blob/cfe862e6dacf5474925110504891fa4120e747f6/lib/beacon-api-types/src/deneb/light_client_header.rs#L16C12-L16C29) data structure, which consists of a beacon header and execution header.
+
+The beacon header is used to prove the consensus and transition the internal state, as well as immediately prove that the execution header is valid. The block height in the execution header is then used for further client operations, such as transaction timeouts. Using the execution height instead of the beacon height for timeouts has advantages for users and developers, ensuring they do not even need to be aware of the Beacon Chain's existence.
+
+Another significant optimization relates to signature aggregation. Since the majority of the sync committee always signs, we instead aggregate the public keys of the non-signers, and subtract that from the aggregated total. Effectively, if on average 90% of members sign, we submit the 10% that did not sign. This results in an approximate 80% computational reduction (by avoiding the need to process 90% of the signatures individually), as well as reducing the size of the client update transaction.

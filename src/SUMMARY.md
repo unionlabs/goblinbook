@@ -30,5 +30,6 @@
 - [Light Clients](./light-clients/intro.md)
 
   - [Ethereum](./light-clients/ethereum.md)
+  - [Inclusion proofs](./light-clients/inclusion-proofs.md)
 
 - [Resources](./resources.md)

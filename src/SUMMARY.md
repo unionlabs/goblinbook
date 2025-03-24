@@ -27,4 +27,9 @@
   - [Swaps](./dex/swaps.md)
   - [SDK](./dex/sdk.md)
 
+- [Light Clients](./light-clients/intro.md)
+
+  - [Ethereum](./light-clients/ethereum.md)
+  - [Inclusion proofs](./light-clients/inclusion-proofs.md)
+
 - [Resources](./resources.md)

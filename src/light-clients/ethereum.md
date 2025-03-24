@@ -63,12 +63,7 @@ BLS signatures (Boneh-Lynn-Shacham) are a type of cryptographic signature scheme
 For our SyncAggregate, computing the aggregate pubkey is simple:
 
 ```python
-def _aggregate_pubkeys(committee, bits)
-    pubkeys = []
-    for i, bit in enumerate(bits):
-        if bit:
-            pubkeys.append(committee[i])
-    return bls.Aggregate(pubkeys)
+{{ #shiftinclude  auto:../snippets/bls_aggregate.py }}
 ```
 
 At scale, we can aggregate thousands (if not hundreds of thousands) of signatures and public keys, while only verifying their aggregates.

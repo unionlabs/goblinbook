@@ -34,4 +34,7 @@
 
 - [ZK](./zk/intro.md)
 
+  - [Gnark](./zk/gnark.md)
+  - [Circuit](./zk/circuits.md)
+
 - [Resources](./resources.md)

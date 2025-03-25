@@ -32,4 +32,9 @@
   - [Ethereum](./light-clients/ethereum.md)
   - [Inclusion proofs](./light-clients/inclusion-proofs.md)
 
+- [ZK](./zk/intro.md)
+
+  - [Gnark](./zk/gnark.md)
+  - [Circuit](./zk/circuits.md)
+
 - [Resources](./resources.md)

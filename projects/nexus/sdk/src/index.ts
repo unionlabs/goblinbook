@@ -116,17 +116,10 @@ const client = new ApolloClient({
 
 const PACKET_QUERY = gql`
   query GetPacket($txHash: String!) {
-    v1_ibc_union_packets(
-      where: { packet_send_transaction_hash: { _eq: $txHash } }
-    ) {
-      source_chain {
-        display_name
-      }
-      destination_chain {
-        display_name
-      }
-      packet_recv_transaction_hash
-      data_decoded
+    v2_packets(args: { p_transaction_hash: $txHash }) {
+      source_universal_chain_id
+      destination_universal_chain_id
+      decoded
       traces {
         type
         block_hash
@@ -148,7 +141,7 @@ async function pollPacketStatus(txHash: string) {
         fetchPolicy: "network-only", // Don't use cache
       });
 
-      const packet = data.v1_ibc_union_packets[0];
+      const packet = data.v2_packets[0];
       if (packet) {
         console.log({ packet });
 

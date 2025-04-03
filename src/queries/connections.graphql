@@ -1,12 +1,11 @@
-{
-  v1_ibc_union_connections(limit: 30) {
-    source_chain {
-      display_name
-    }
-    destination_chain {
-      display_name
-    }
+query Connections @cached(ttl: 60) {
+  v2_connections(args: { p_limit: 30 }) {
+    source_universal_chain_id
+    source_client_id
     source_connection_id
+
+    destination_universal_chain_id
+    destination_client_id
     destination_connection_id
   }
 }

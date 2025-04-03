@@ -1,12 +1,13 @@
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENDPOINT="https://development.graphql.union.build/v1/graphql"
 FAILURES=0
 TEMP_DIR=$(mktemp -d)
 trap "rm -rf $TEMP_DIR" EXIT
 
 # Process all query files
-for file in src/queries/*.graphql; do
+for file in "$SCRIPT_DIR"/../src/queries/*.graphql; do
   # Create a unique output file for each test
   output_file="$TEMP_DIR/$(basename "$file").log"
   

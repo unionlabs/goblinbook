@@ -20,9 +20,9 @@ Here for example, we show how to query for packets using `gq`.
 <div id="Command" class="tabcontent">
 
 ```bash
-gq https://graphql.union.build/v1/graphql -q '
+gq https://development.graphql.union.build/v1/graphql -q '
 {
-  v1_ibc_union_packets(limit: 3) {
+  v2_packets(args: { p_limit: 3 }) {
     packet_hash
     packet_send_block_hash
   }

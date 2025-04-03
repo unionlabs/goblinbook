@@ -120,29 +120,41 @@ The indexer uses the `channel.version` to decode the packet and show what is bei
 ```
 {
   "data": {
-    "v1_ibc_union_packets": [
+    "v2_packets": [
       {
         "channel_version": "ucs03-zkgm-0",
-        "data_decoded": {
+        "decoded": {
           "path": "0x0",
-          "salt": "0x0e38c523e23e20f200c0a5b679b2691fcec0bbee7cb6ba293078057de61a8a17",
+          "salt": "0x39cdaec1be16a7f3a5c39db77ff337ba8675c8937e81b0d2418b1b52f404e4d4",
           "instruction": {
             "_index": "",
-            "opcode": 3,
+            "opcode": 2,
             "operand": {
-              "_type": "FungibleAssetOrder",
-              "sender": "0x756e696f6e3177386d386e33396778653473746b65343466386a6e6d616b396b337561613971686e72653533",
-              "receiver": "0x73746172733177386d386e33396778653473746b65343466386a6e6d616b396b337561613971666334763333",
-              "baseToken": "0x6d756e6f",
-              "baseAmount": "0x64",
-              "quoteToken": "0x7374617273316d3967657664387574676d6e32686b6e6468737937636b6e7734726c7a656e686e636d6c6a6e6c39656373773066757177763871676e6e727471",
-              "quoteAmount": "0x64",
-              "baseTokenName": "muno",
-              "baseTokenPath": "0x0",
-              "baseTokenSymbol": "muno"
+              "_type": "Batch",
+              "instructions": [
+                {
+                  "_index": "0",
+                  "opcode": 3,
+                  "operand": {
+                    "_type": "FungibleAssetOrder",
+                    "sender": "0x307865663433356538653663353337363130666562636361656538356236363864623165636166653032",
+                    "receiver": "0x50a22f95bcb21e7bfb63c7a8544ac0683dcea302",
+                    "baseToken": "0x7562626e",
+                    "baseAmount": "0x1",
+                    "quoteToken": "0x9e8af87a38012f5bb809b8040b4e34439fb8122f",
+                    "quoteAmount": "0x1",
+                    "baseTokenName": "ubbn",
+                    "baseTokenPath": "0x0",
+                    "baseTokenSymbol": "ubbn",
+                    "baseTokenDecimals": 0
+                  },
+                  "version": 1,
+                  "_instruction_hash": "0x6d4debb95009b4c114d1faeac846042755da1e4814d92d300004c091d30581ae"
+                }
+              ]
             },
             "version": 0,
-            "_instruction_hash": "0x90c591e2f19fc9608d5c88667c3149b10c6ea799cdd1a85c191d759df85448ce"
+            "_instruction_hash": "0x44e9064c6fbb9ee05a91dc52a4fe66f0b6544bd5a7f747f445e3610e9bc910bc"
           }
         }
       },

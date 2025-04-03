@@ -1,6 +1,6 @@
-{
-  v1_ibc_union_packets(limit: 5) {
+query Packets @cached(ttl: 60) {
+  v2_packets(args: { p_limit: 5 }) {
     channel_version
-    data_decoded
+    decoded
   }
 }

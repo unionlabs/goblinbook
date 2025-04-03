@@ -1,11 +1,7 @@
-{
-  v1_ibc_union_clients(limit: 3) {
+query Clients @cached(ttl: 60) {
+  v2_clients(args: { p_limit: 3 }) {
+    universal_chain_id
     client_id
-    chain {
-      display_name
-    }
-    counterparty_chain {
-      display_name
-    }
+    counterparty_universal_chain_id
   }
 }

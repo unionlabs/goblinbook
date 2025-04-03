@@ -1,22 +1,21 @@
-{
-  v1_ibc_union_channel_recommendations(where: {source_chain_id: {_eq: "17000"}}) {
-    destination_chain {
-      chain_id
-    }
-    source_chain {
-      chain_id
-    }
-    destination_chain_id
-    destination_channel_id
-    destination_client_id
-    destination_connection_id
-    destination_port_id
-    source_chain_id
-    source_channel_id
+query RecommendedChannelsSepolia @cached(ttl: 60) {
+  v2_channels(args: {
+    p_limit: 5,
+    p_recommended: true,
+    p_source_universal_chain_id: "ethereum.11155111"
+  }) {
+    source_universal_chain_id
     source_client_id
     source_connection_id
+    source_channel_id
     source_port_id
-    status
+
+    destination_universal_chain_id
+    destination_client_id
+    destination_connection_id
+    destination_channel_id
+    destination_port_id
+
     version
   }
 }

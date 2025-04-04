@@ -122,7 +122,7 @@ Right now our code relies on the fact that the relayer is paid by the price of t
 
 ### Supported Assets
 
-Nexus will now create orders for any asset, which means that we might receive invalid orders which will always time out. Limiting the assets that we accept will prevent these errors from occuring.
+Nexus will now create orders for any asset, which means that we might receive invalid orders which will always time out. Limiting the assets that we accept will prevent these errors from occurring.
 
 ### Local Swaps
 

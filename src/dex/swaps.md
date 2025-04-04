@@ -80,6 +80,10 @@ Next we will construct our `FungibleAssetOrder`. We use the values from the chan
 }
 ```
 
+Right now we set `sender` to `msg.sender`. This just means that on timeouts or other operational issues, the assets will be refunded to the address in the sender field. Our dex does not need to handle unfilled orders by itself.
+
+We could also make this a field in our `Order`, to allow users to specify a different address, or potentially make it a smart contract address and build our own refund mechanism.
+
 ### Submit the Order
 
 To interact with the IBC contract, we will need to store it in our own contract. For now, let's pass it during construction.

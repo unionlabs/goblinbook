@@ -33,7 +33,7 @@ This connection effectively acts as a socket to read and write bytes between the
 
 ## Multiple Connections
 
-Usually the relation between chains and connections is one-on-one, meaning that there only exists one connection between two chains. There is nothing preventing multiple from existing however. You will probably see some duplicates for testing reasons: deploying connections while verifiying the actual production one will work.
+Usually the relation between chains and connections is one-on-one, meaning that there only exists one connection between two chains. There is nothing preventing multiple from existing however. You will probably see some duplicates for testing reasons: deploying connections while verifying the actual production one will work.
 
 <div class="tab">
   <button class="tablinks" onclick="openTab(event, 'Command')">Fetch Connections</button>

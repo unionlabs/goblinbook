@@ -13,8 +13,8 @@ Every IBC client must provide:
 
 However, the implementation details can vary depending on the execution environment (EVM or Move for example).
 
-We usually refer to both the code and to the instatiation as a client. The best way to grok this, is to see a client
-as both the ERC20 code implementation, and an actual ERC20 coin. There can be many clients on a chain, and new clients can be trustlessly instatiated after the code has been uploaded.
+We usually refer to both the code and to the instantiation as a client. The best way to grok this, is to see a client
+as both the ERC20 code implementation, and an actual ERC20 coin. There can be many clients on a chain, and new clients can be trustlessly instantiated after the code has been uploaded.
 
 ### State Tracking
 

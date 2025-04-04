@@ -8,6 +8,6 @@ Often in various protocols, we talk about message sending between chains. These 
 
 This means that cross-chain communication requires not just moving data, but also proving that the data came from a valid source and was properly authorized. The relayers that facilitate this communication serve a role similar to routers in internet infrastructure, but with the additional responsibility of providing cryptographic proofs and handling consensus verification.
 
-We will go through each layer of Union's protocol and explain how packet semantics, cryptographic verification and guaranteed delivery is implemented. We shall see how (light)clients, connections, channels and packets relate to eachother and inspect the real-life usage of the core general-message passing protocol in asset transfers.
+We will go through each layer of Union's protocol and explain how packet semantics, cryptographic verification and guaranteed delivery is implemented. We shall see how (light)clients, connections, channels and packets relate to each other and inspect the real-life usage of the core general-message passing protocol in asset transfers.
 
 The next sections are heavy on theoretical knowledge, after which we will continue to build a dApp which leverages Union to interact with Bitcoin derivatives.

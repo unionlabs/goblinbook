@@ -7,7 +7,7 @@ In this project, we will implement the basics of a multichain decentralized exch
 Our application will have the following functionality:
 
 - Swaps: choose assets.
-- Bridge: choose destination chain.
+- Bridge: choose the destination chain.
 - History: track historic trades
 
 We will focus on implementing the logic only. Frontend, design and UX will not be covered (although we'd gladly accept PRs to expand the guide).

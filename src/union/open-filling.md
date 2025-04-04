@@ -10,13 +10,13 @@ Traditional bridge protocols typically handle transfers through a single mechani
 
 Each model handles one token type at a time, requiring multiple separate transfers for different assets, and quite often requiring users to switch between various bridges.
 
-One step forward in making the bridge model more flexible, is to separate the relaying of information from the actual fullfilment of an order. The bridge protocol focusses on providing the initial data and relaying the acknowledgement, while different implementations can exist to actually provide the assets. We refer to this model as open filling.
+One step forward in making the bridge model more flexible, is to separate the relaying of information from the actual fulfillment of an order. The bridge protocol focuses on providing the initial data and relaying the acknowledgement, while different implementations can exist to actually provide the assets. We refer to this model as open filling.
 
 We shall see that open filling has advantages in flexibility and can make better use of local optimizations. On some chains, liquidity pools may be abundant, while on others, the solver market is more mature. Open filling allows bridges to adjust to these market realities.
 
 ## Open Filling
 
-Union introduces "open filling" where a the assets in a transfer can be provided in various ways, while still guaranteeing the atomic execution of the packet:
+Union introduces "open filling" where the assets in a transfer can be provided in various ways, while still guaranteeing the atomic execution of the packet:
 
 1. A single transfer can include multiple different tokens
 1. Each token can use its own fill mechanism

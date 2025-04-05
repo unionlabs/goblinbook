@@ -4,7 +4,7 @@ Even though UI and design are out of scope for this guide, we will still go thro
 
 ## Setup
 
-For our Javacript side logic, we will extend our flake.nix with the right tools:
+For our JavaScript side logic, we will extend our flake.nix with the right tools:
 
 ```nix
 {{ #shiftinclude  auto:../../projects/nexus/flake.nix:sdk-flake-nix }}

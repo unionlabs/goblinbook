@@ -8,7 +8,7 @@ Recall how a light client verifies that a block is canonical. In the case of Eth
 {{ #shiftinclude  auto:../snippets/bls_aggregate.py }}
 ```
 
-For other chains, pre-aggregation might not occur. For example, Tendermint simply has each validator signature (and vote) appended in the block. This means that to verify if the block is canonical, we have to perform a signature verification for each validator individually. Here is a pseudo-Python Tendermint block verifier (it doesn't handle voting correctly and misses some components).
+For other chains, pre-aggregation might not occur. For example, Tendermint simply has each validator's signature (and vote) appended in the block. This means that to verify if the block is canonical, we have to perform a signature verification for each validator individually. Here is a pseudo-Python Tendermint block verifier (it doesn't handle voting correctly and misses some components).
 
 ```python
 {{ #shiftinclude  auto:../snippets/verify_tendermint_votes.py }}

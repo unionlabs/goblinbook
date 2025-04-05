@@ -242,4 +242,4 @@ This should now return the amount sent in the first `FungibleAssetOrder`.
 
 ## Summary
 
-This was a hands-on way to introduce you to multichain programming. We have ommitted the implementation details of many of the individual steps. You have now experienced the transfer flow that a regular user experiences when interacting through UIs. In the next chapter, we will go deeper into what each trace meant. Later we will write a simple solver, and show orders are filled.
+This was a hands-on way to introduce you to multichain programming. We have omitted the implementation details of many of the individual steps. You have now experienced the transfer flow that a regular user experiences when interacting through UIs. In the next chapter, we will go deeper into what each trace meant. Later we will write a simple solver, and show orders are filled.

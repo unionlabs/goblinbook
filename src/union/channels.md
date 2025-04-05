@@ -37,7 +37,7 @@ The channel handshake ensures both applications:
 
 Multiple channels can exist over a single connection, each serving different applications. For example, a token transfer application and a governance application could each have their own channel while sharing the underlying secure connection. In general, Union multiplexes traffic over connections and only maintains one connection per chain, while operating many different channels.
 
-## Channel Usecases
+## Channel Use Cases
 
 Whenever a protocol has a structured message format, it should consider using a specific channel. This is useful for indexers, which use `channel.version` to read packets for further analysis.
 
@@ -75,7 +75,7 @@ graph TB
     Chain3 --- B4[Token Bridge] & B5[NFT Bridge] & B6[Governance]
 ```
 
-In legacy channel configurations, there would be 3 individual channels. Multiplexing offers key advantes:
+In legacy channel configurations, there would be 3 individual channels. Multiplexing offers key advantages:
 
 - Applications do not need to relay their own channels.
 - Smart contract developers can leverage enshrined smart contracts.

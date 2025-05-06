@@ -1,7 +1,7 @@
 // ANCHOR: managing-wallets-imports
 import { createWalletClient, http } from "npm:viem";
-import { mnemonicToAccount } from "npm:@viem/accounts";
-import { sepolia, holesky } from "npm:viem/chains";
+import { mnemonicToAccount } from "npm:viem/accounts";
+import { holesky, sepolia } from "npm:viem/chains";
 // ANCHOR_END: managing-wallets-imports
 
 // ANCHOR: create-client-imports
@@ -9,13 +9,13 @@ import { createPublicClient, formatEther } from "npm:viem";
 // ANCHOR_END: create-client-imports
 
 // ANCHOR: approvals-imports
-import { erc20Abi } from "viem";
+import { erc20Abi } from "npm:viem";
 // ANCHOR_END: approvals-imports
 
 // ANCHOR: send-imports
-import { Batch, FungibleAssetOrder } from "npm:@unionlabs/sdk/evm/ucs03";
+import { Instruction } from "npm:@unionlabs/sdk/ucs03";
 import { ucs03abi } from "npm:@unionlabs/sdk/evm/abi";
-import { toHex, type Hex } from "viem";
+import { type Hex, toHex } from "npm:viem";
 // ANCHOR_END: send-imports
 
 // ANCHOR: wrapping-imports
@@ -105,24 +105,12 @@ async function main() {
     return toHex(rawSalt) as Hex;
   }
 
-  let transferHash = await sepoliaWallet.writeContract({
-    account: sepoliaWallet.account.address as `0x${string}`,
-    abi: ucs03abi,
-    chain: sepolia,
-    functionName: "send",
-    address: ucs03address,
-    args: [
-      // obtained from the graphql Channels query
-      sourceChannelId,
-      // this transfer is timeout out by timestamp, so we set height to 0.
-      0n,
-      // The actual timeout. It is current time + 2 hours.
-      BigInt(Math.floor(Date.now() / 1000) + 7200),
-      generateSalt(),
-      // We're actually enqueuing two transfers, the main transfer, and fee.
-      Batch([
-        // Our main transfer.
-        FungibleAssetOrder([
+  // We're actually enqueuing two transfers, the main transfer, and fee.
+  const instruction = new Instruction.Batch({
+    operand: [
+      // Our main transfer.
+      new Instruction.FungibleAssetOrder({
+        operand: [
           sepoliaWallet.account.address,
           holeskyWallet.account.address,
           WETH_ADDRESS,
@@ -139,9 +127,11 @@ async function main() {
           "0x685a6d912eced4bdd441e58f7c84732ceccbd1e4",
           // quote amount
           4n,
-        ]),
-        // Our fee transfer.
-        FungibleAssetOrder([
+        ],
+      }),
+      // Our fee transfer.
+      new Instruction.FungibleAssetOrder({
+        operand: [
           sepoliaWallet.account.address,
           holeskyWallet.account.address,
           WETH_ADDRESS,
@@ -158,14 +148,36 @@ async function main() {
           "0x685a6d912eced4bdd441e58f7c84732ceccbd1e4",
           // quote amount
           0n,
-        ]),
-      ]),
+        ],
+      }),
+    ],
+  });
+
+  const transferHash = await sepoliaWallet.writeContract({
+    account: sepoliaWallet.account.address as `0x${string}`,
+    abi: ucs03abi,
+    chain: sepolia,
+    functionName: "send",
+    address: ucs03address,
+    args: [
+      // obtained from the graphql Channels query
+      sourceChannelId,
+      // this transfer is timeout out by timestamp, so we set height to 0.
+      0n,
+      // The actual timeout. It is current time + 2 hours.
+      BigInt(Math.floor(Date.now() / 1000) + 7200),
+      generateSalt(),
+      {
+        opcode: instruction.opcode,
+        version: instruction.version,
+        operand: Instruction.encodeAbi(instruction),
+      },
     ],
   });
   // ANCHOR_END: send
 
   // ANCHOR: query-traces
-  let query = `
+  const query = `
     query {
         v2_transfers(where: {transfer_send_transaction_hash:{_eq: "${transferHash}"}}) {
             traces {

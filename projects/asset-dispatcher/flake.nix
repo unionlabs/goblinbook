@@ -44,7 +44,7 @@
               sha256 = "sha256-7reSKyqBLw47HLK5AdgqL1+qW+yRP98xljtcnp69sw4=";
             };
           }.${system};
-          platform = builtins.trace "Using platform: ${denortPerSystem.target}" denortPerSystem.target;
+          platform = builtins.trace "Sourcing DENORT with target: ${denortPerSystem.target}" denortPerSystem.target;
           packageJson = lib.importJSON ./package.json;
           pnpm = pkgs.pnpm;
           deno = pkgs.deno;
@@ -63,8 +63,9 @@
               npmConfigHook = pnpm.configHook;
               nativeBuildInputs = [
                 deno
+                denort
               ];
-              npmDepsHash = "sha256-aCanKkUwZQdsaNFIojQdLPMko6EGxGStX6TxxCS5pVY=";
+              npmDepsHash = "sha256-3voJpX8kvHtPgDgKiYCTG8QTEW5q+LZD8nvKXank4jw=";
               pnpmDeps = pnpm.fetchDeps {
                 inherit
                   pname

@@ -38,7 +38,7 @@ The root hash uniquely represents the entire dataset. If any piece of data in th
 def prove(state_root, proof, V) -> Boolean
 ```
 
-For Merkle trees specifically, we construct Merkle Inclusion proofs. Constructing the proof is relatively compute intensive and requires access to the full state and history, so only archive nodes are capable of doing so.
+For Merkle trees specifically, we construct Merkle Inclusion proofs. Constructing the proof is relatively computationally intensive and requires access to the full state and history, so only archive nodes are capable of doing so.
 
 ## Inclusion Proofs
 

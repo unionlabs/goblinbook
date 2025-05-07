@@ -33,7 +33,7 @@ flowchart LR
     DestContract -.-> |indexes| GraphQL
 ```
 
-We will focus on how to submit orders to `Nexus`, call the Union solidity API, and track order fullfilment. Finally we shall implement a `Voyager` plugin to
+We will focus on how to submit orders to `Nexus`, call the Union solidity API, and track order fulfillment. Finally we shall implement a `Voyager` plugin to
 specifically solve for our protocol.
 
 ## Requirements

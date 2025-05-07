@@ -19,7 +19,7 @@ import { type Hex, toHex } from "npm:viem";
 // ANCHOR_END: send-imports
 
 // ANCHOR: wrapping-imports
-import { parseEther } from "viem";
+import { parseEther } from "npm:viem";
 // ANCHOR_END: wrapping-imports
 
 // @ts-ignore hack to print bigints as JavaScript does not support this by default
@@ -28,17 +28,17 @@ BigInt["prototype"].toJSON = function () {
 };
 
 async function main() {
-  const memo = "memo memo memo memoe";
+  const mnemonic = "replace me";
 
   // ANCHOR: managing-wallets
   const sepoliaWallet = createWalletClient({
-    account: mnemonicToAccount(memo),
+    account: mnemonicToAccount(mnemonic),
     chain: sepolia,
     transport: http(),
   });
 
   const holeskyWallet = createWalletClient({
-    account: mnemonicToAccount(memo),
+    account: mnemonicToAccount(mnemonic),
     chain: holesky,
     transport: http(),
   });
@@ -47,24 +47,34 @@ async function main() {
   console.log(`Holesky address: ${holeskyWallet.account.address}`);
   // ANCHOR_END: managing-wallets
 
+  // https://github.com/unionlabs/union/blob/97e5e8346f824e482185953a6648ad8b9bed9ac3/deployments/deployments.json#L256
+  const ucs03address = "0x5fbe74a283f7954f10aa04c2edf55578811aeb03";
+  const sourceChannelId = 8;
+  // https://sepolia.etherscan.io/token/0x7b79995e5f793a07bc00c21412e50ecae098e7f9
+  const WETH_ADDRESS = "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9";
+
   // ANCHOR: create-client
   const sepoliaClient = createPublicClient({
     chain: sepolia,
     transport: http(),
   });
 
-  const balance = await sepoliaClient.getBalance({
+  const gasBalance = await sepoliaClient.getBalance({
     address: sepoliaWallet.account.address,
   });
 
-  console.log(`Sepolia balance: ${formatEther(balance)} ETH (${balance} wei)`);
-  // ANCHOR_END: create-client
+  const erc20Balance = await sepoliaClient.readContract({
+    address: WETH_ADDRESS,
+    abi: erc20Abi,
+    functionName: "balanceOf",
+    args: [sepoliaWallet.account.address],
+  });
 
-  // https://github.com/unionlabs/union/blob/97e5e8346f824e482185953a6648ad8b9bed9ac3/deployments/deployments.json#L256
-  const ucs03address = "0x84F074C15513F15baeA0fbEd3ec42F0Bd1fb3efa";
-  const sourceChannelId = 2;
-  // https://sepolia.etherscan.io/token/0x7b79995e5f793a07bc00c21412e50ecae098e7f9
-  const WETH_ADDRESS = "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9";
+  console.log([
+    `Sepolia Gas Balance:   ${formatEther(gasBalance)} ETH (${gasBalance} wei)`,
+    `Sepolia Token Balance: ${formatEther(erc20Balance)} WETH`,
+  ].join("\n"));
+  // ANCHOR_END: create-client
 
   // ANCHOR: wrapping
   // WETH ABI - we only need the deposit function for wrapping
@@ -124,7 +134,7 @@ async function main() {
           // path
           0n,
           // quote token
-          "0x685a6d912eced4bdd441e58f7c84732ceccbd1e4",
+          "0xb476983cc7853797fc5adc4bcad39b277bc79656",
           // quote amount
           4n,
         ],
@@ -145,7 +155,7 @@ async function main() {
           // path
           0n,
           // quote token
-          "0x685a6d912eced4bdd441e58f7c84732ceccbd1e4",
+          "0xb476983cc7853797fc5adc4bcad39b277bc79656",
           // quote amount
           0n,
         ],
@@ -154,9 +164,7 @@ async function main() {
   });
 
   const transferHash = await sepoliaWallet.writeContract({
-    account: sepoliaWallet.account.address as `0x${string}`,
     abi: ucs03abi,
-    chain: sepolia,
     functionName: "send",
     address: ucs03address,
     args: [
@@ -179,32 +187,50 @@ async function main() {
   // ANCHOR: query-traces
   const query = `
     query {
-        v2_transfers(where: {transfer_send_transaction_hash:{_eq: "${transferHash}"}}) {
-            traces {
-                type
-                height
-                chain { 
-                    display_name
-                    universal_chain_id
-                }
-            }
+      v2_transfers(where: {transfer_send_transaction_hash:{_eq: "${transferHash}"}}) {
+        traces {
+          type
+          height
+          chain { 
+            display_name
+            universal_chain_id
+          }
         }
+      }
     }`;
 
-  const response = await fetch("https://graphql.union.build", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      query,
-      variables: {},
-    }),
+  const result = await new Promise((resolve, reject) => {
+    const interval = setInterval(async () => {
+      try {
+        const request = fetch("https://graphql.union.build/v1/graphql", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query,
+            variables: {},
+          }),
+        });
+
+        const response = await request;
+        const json = await response.json();
+        const transfers = json.data["v2_transfers"];
+
+        console.log({ json });
+
+        if (transfers?.length) {
+          clearInterval(interval);
+          resolve(transfers);
+        }
+      } catch (err) {
+        clearInterval(interval);
+        reject(err);
+      }
+    }, 5_000);
   });
 
-  const data = await response.json();
-
-  console.log(data);
+  console.log(result);
   // ANCHOR_END: query-traces
 
   // ANCHOR: verify-balance
@@ -214,15 +240,17 @@ async function main() {
   });
 
   const holeskyBalance = await holeskyClient.readContract({
-    address: "0x685a6d912eced4bdd441e58f7c84732ceccbd1e4",
+    address: "0xb476983cc7853797fc5adc4bcad39b277bc79656",
     abi: erc20Abi,
     functionName: "balanceOf",
     args: [holeskyWallet.account.address],
   });
 
-  const formattedBalance = balance / 10n ** BigInt(18);
+  const formattedBalance = gasBalance / 10n ** BigInt(18);
 
-  console.log(`Token balance: ${formattedBalance} (${holeskyBalance})`);
+  console.log(
+    `Token balance: ${formatEther(formattedBalance)} (${holeskyBalance})`,
+  );
   // ANCHOR_END: verify-balance
 }
 

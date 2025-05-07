@@ -3,9 +3,8 @@
   "version": "1.0.1",
   "type": "module",
   "scripts": {
-    "build": "tsc",
-    "test": "vitest run",
-    "test-watch": "vitest"
+    "build": "deno compile",
+    "execute": "deno run src/index.ts"
   },
   "files": [
     "./src",
@@ -16,9 +15,7 @@
   "license": "MIT",
   "description": "",
   "devDependencies": {
-    "typescript": "^5.8.2",
-    "viem": "^2.28.4",
-    "vitest": "^3.0.8"
+    "viem": "^2.28.4"
   },
   "dependencies": {
     "@unionlabs/sdk": "1.9.5"

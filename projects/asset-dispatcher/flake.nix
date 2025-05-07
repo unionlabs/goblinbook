@@ -65,7 +65,7 @@
                 deno
                 denort
               ];
-              npmDepsHash = "sha256-3voJpX8kvHtPgDgKiYCTG8QTEW5q+LZD8nvKXank4jw=";
+              npmDepsHash = "sha256-ZztV7LzNfN2fGX1+cUq77DQLfxYPiCh4IK/fk/HbrAE=";
               pnpmDeps = pnpm.fetchDeps {
                 inherit
                   pname

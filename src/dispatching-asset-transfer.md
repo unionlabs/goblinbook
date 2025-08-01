@@ -61,7 +61,7 @@ For now we are going to use the raw bindings, to show what happens under the hoo
 1. Approve the contracts.
 1. Sending the bridge transfer.
 
-For step 1. we will rely on etherscan and the Union API. In production you might want to store hardcoded mappings, or dynamically fetch these values from your own APIs. Constructing the transaction is simple for an asset transfer. This is also the stage where we might add 1-click swaps, or DEX integration later down the road.
+For step 1, we will rely on etherscan and the Union API. In production you might want to store hardcoded mappings, or dynamically fetch these values from your own APIs. Constructing the transaction is simple for an asset transfer. This is also the stage where we might add 1-click swaps, or DEX integration later down the road.
 
 Although step 3 seems trivial, it is actually quite annoying when dealing with multiple, independent ecosystems. That's why we are doing EVM to EVM for now, so we are only dealing with one execution environment implementation.
 

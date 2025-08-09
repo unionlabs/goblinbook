@@ -79,7 +79,7 @@ The aggregated values of interest are:
 {{ #shiftinclude  auto:../snippets/lightclient.go:aggregated-values}}
 ```
 
-We sum the voting power, since we do not want to verify that 2/3 validators attested the block, but that 2/3 of the voting power attested to it. In Tendermint based chains, validators can have a variable amount of stake, as opposed to Ethereum, where it is always 32 ETH.
+We sum the voting power, since we do not want to verify that 2/3 validators attested the block, but that 2/3 of the voting power attested to it. In Tendermint-based chains, validators can have a variable amount of stake, as opposed to Ethereum, where it is always 32 ETH.
 
 Finally we verify the aggregated values.
 

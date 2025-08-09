@@ -79,4 +79,4 @@ In legacy channel configurations, there would be 3 individual channels. Multiple
 
 - Applications do not need to relay their own channels.
 - Smart contract developers can leverage enshrined smart contracts.
-- The channel implementation can use smart batching to limit the amount of packets necessary.
+- The channel implementation can use smart batching to limit the number of packets necessary.

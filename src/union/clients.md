@@ -43,7 +43,7 @@ Clients must verify proofs that specific transactions or packets were included i
 
 1. Verifying the proof format matches the counterparty's tree structure
 1. Checking the proof against the stored commitment root
-1. Validating the claimed data matches the proof
+1. Validating that the claimed data matches the proof
 
 For example:
 

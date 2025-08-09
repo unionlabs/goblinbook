@@ -13,7 +13,7 @@ Start by creating a flake.nix. We will be using `foundry` and using our flake to
 
 Now you can run `nix develop` to activate the local environment and use `forge` and other tools. Verify the installation succeeded by running `forge init nexus`.
 
-Next we need to install the Union evm contracts.
+Next we need to install the Union EVM contracts.
 
 ```bash
 forge install OpenZeppelin/openzeppelin-contracts
@@ -65,7 +65,7 @@ Next, we need to handle the ERC20 token transfer from user to Nexus contract:
 }
 ```
 
-Currently we assume the tokens will always be ERC20, which means that we cannot support native Eth. Union's transfer app handles this by optionally performing [wrapping](https://github.com/unionlabs/union/blob/5f4607a0cba6b8db1991b1d24f08605e9ba8600e/evm/contracts/apps/ucs/03-zkgm/Zkgm.sol#L492C13-L492C17) for the user. This is a good addtion to the protocol to implement in a v2.
+Currently we assume the tokens will always be ERC20, which means that we cannot support native Eth. Union's transfer app handles this by optionally performing [wrapping](https://github.com/unionlabs/union/blob/5f4607a0cba6b8db1991b1d24f08605e9ba8600e/evm/contracts/apps/ucs/03-zkgm/Zkgm.sol#L492C13-L492C17) for the user. This is a good addition to the protocol to implement in a v2.
 
 ### Order Instructions
 
@@ -92,7 +92,7 @@ To interact with the IBC contract, we will need to store it in our own contract.
 {{ #shiftinclude  auto:../../projects/nexus/nexus/src/Nexus.sol:constructor}}
 ```
 
-When submitting the order, we should provide a `timeoutTimestamp`. If the order isn't completed before the timout, the funds will be refunded. This timeout will ensure that if solvers do not want to handle the order (because of price fluctuations) or if there is an outage on the Union network, the user will still receive their funds.
+When submitting the order, we should provide a `timeoutTimestamp`. If the order isn't completed before the timeout, the funds will be refunded. This timeout will ensure that if solvers do not want to handle the order (because of price fluctuations) or if there is an outage on the Union network, the user will still receive their funds.
 
 ```solidity
 function swap(Order calldata order) external {

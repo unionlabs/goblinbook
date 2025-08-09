@@ -31,7 +31,7 @@ Since initialization is rather trivial, we will not dive deeper into it.
 
 ### Updating
 
-Since Ethereum is finalized by the Beacon Chain, our Ethereum light client accepts beacon block data as update input. A [beacon block](https://eth2book.info/capella/part3/containers/blocks/#beacon-blocks) roughly has this structure:
+Since Ethereum is finalized by the Beacon Chain, our Ethereum light client accepts beacon block data as an update input. A [beacon block](https://eth2book.info/capella/part3/containers/blocks/#beacon-blocks) roughly has this structure:
 
 ```python
 class BeaconBlockBody(Container):

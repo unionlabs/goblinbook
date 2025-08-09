@@ -34,7 +34,7 @@ We define the constraints inside the Define function, which accepts an `api fron
 {{ #shiftinclude  auto:../snippets/intro-to-gnark.go:define-signature}}
 ```
 
-For each rule, we call various assertions on the `api`. These assertions are not run immediately. Instead we are building a program under the hood, to be run later against actual variables. The actual for loop is not part of our circuit either, instead it is just execution each instruction one-by-one, effectively unrolling the loop.
+For each rule, we call various assertions on the `api`. These assertions are not run immediately. Instead we are building a program under the hood, to be run later against actual variables. The actual for loop is not part of our circuit either, instead it is just executing each instruction one-by-one, effectively unrolling the loop.
 
 ```go
 {{ #shiftinclude  auto:../snippets/intro-to-gnark.go:constraint-1}}

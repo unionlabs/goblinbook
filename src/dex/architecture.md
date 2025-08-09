@@ -46,7 +46,7 @@ Our app will focus on two core operations:
 Each operation will maintain comprehensive historical data tracking user trades, token amounts, prices at execution time, and transaction status. This data will be used for:
 
 - Displaying trade history
-- Calculating PnL across chains
+- Calculating P&L across chains
 - Analyzing user trading patterns
 
 ## Swaps
@@ -61,4 +61,4 @@ Since we are building a multichain exchange, we will not allow swaps without bri
 
 ## Historic data
 
-We will query the Union graphql API for data related to our contracts and users. For now we do not store them in another database, although if we want to do advanced analysis, that'd be the next step.
+We will query the Union GraphQL API for data related to our contracts and users. For now we do not store them in another database, although if we want to do advanced analysis, that'd be the next step.

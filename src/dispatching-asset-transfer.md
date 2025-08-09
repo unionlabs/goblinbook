@@ -53,7 +53,7 @@ At this point, we have secured testnet funds and set up a local wallet (though n
 
 ## Performing the Asset Transfer
 
-To do the bridge operation, we'll directly interact with the Union contracts through their ABI. We will use the Union [SDK](https://www.npmjs.com/package/@unionlabs/sdk) package to import some types and the required ABIs. The sdk provides both low-level bindings to various contracts, as well as backend clients and effects based on [effect.website](https://effect.website/).
+To do the bridge operation, we'll directly interact with the Union contracts through their ABI. We will use the Union [SDK](https://www.npmjs.com/package/@unionlabs/sdk) package to import some types and the required ABIs. The SDK provides both low-level bindings to various contracts, as well as backend clients and effects based on [effect.website](https://effect.website/).
 
 For now we are going to use the raw bindings, to show what happens under the hood. To perform an asset transfer, we need to perform 3 distinct steps:
 
@@ -151,7 +151,7 @@ Once the transfer is enqueued onchain, we go through a pipeline of backend opera
 
 The `PACKET_SEND` was actually us performing the transfer. The other steps are executed by solvers. Later we will write a solver to explore what each entails.
 
-To get the tracing data, we'll make a [Graphql](https://graphql.org/) query. For now we will just use `fetch` calls, but there are many high quality graphql clients around.
+To get the tracing data, we'll make a [GraphQL](https://graphql.org/) query. For now we will just use `fetch` calls, but there are many high quality GraphQL clients around.
 
 ```typescript
 {{ #shiftinclude  auto:../projects/asset-dispatcher/src/index.ts:query-traces | dedent }}

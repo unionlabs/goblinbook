@@ -135,7 +135,7 @@ nix shell nixpkgs#nodePackages.graphqurl
 
 </div>
 
-We can set the route in Nexus by making a call with our deployer private key, using the `setChannelId` function. We will write a Typescript helperfunction again. First we extend the ABI definition:
+We can set the route in Nexus by making a call with our deployer private key, using the `setChannelId` function. We will write a Typescript helper function again. First we extend the ABI definition:
 
 ```typescript
 {{ #shiftinclude  auto:../../projects/nexus/sdk/src/index.ts:abi-signature}}
@@ -158,7 +158,7 @@ Now our swap function will succeed and enqueue a swap.
 
 Once the swap is enqueued and we receive the `txHash`, we can monitor it's progression through the indexer. We can query the details using `gq` again, but we will leave that up for you to figure out.
 
-Inside our app, we should perodically poll (once every 3 seconds is reasonable). That way, we will see additional traces appear, which we can use to track the transfer progression. For executing the queries, we'll leverage `apollo`.
+Inside our app, we should periodically poll (once every 3 seconds is reasonable). That way, we will see additional traces appear, which we can use to track the transfer progression. For executing the queries, we'll leverage `apollo`.
 
 ```typescript
 {{ #shiftinclude  auto:../../projects/nexus/sdk/src/index.ts:poll-packet}}
@@ -166,7 +166,7 @@ Inside our app, we should perodically poll (once every 3 seconds is reasonable).
 
 Apollo will so some typechecking and smart caching for us, which is very helpful. Notice how we now pass the `txHash` as an argument to the `PACKET_QUERY` as well.
 
-For our poll function, we will continiously poll until we see the `PACKET_RECV` trace, which means that the packet has been received on the destination side. In actual frontends, we will want to do something similiar such as periodic polling, but connect these to our effects or stores.
+For our poll function, we will continuously poll until we see the `PACKET_RECV` trace, which means that the packet has been received on the destination side. In actual frontends, we will want to do something similiar such as periodic polling, but connect these to our effects or stores.
 
 ```typescript
 {{ #shiftinclude  auto:../../projects/nexus/sdk/src/index.ts:poll-packet-status}}

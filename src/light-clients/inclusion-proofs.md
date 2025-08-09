@@ -32,7 +32,7 @@ In this diagram:
 1. We then pair the leaf nodes and hash their concatenated values to form the next level (H1, H2)
 1. Finally, we concatenate and hash the results to get the root hash
 
-The root hash uniquely represents the entire dataset. If any piece of data in the tree changes, the root hash will also change. Root hashes are present in block headers for most blockchains. Ethereum for example has the`state_root` field in each header. With the state root, we can construct a proof for any data stored on Ethereum, so whenever we write value V to storage in a solidty smart contract at block H, we can construct a proof to show that from H onwards, that slot contains V. This proof will be valid until we update or delete the value.
+The root hash uniquely represents the entire dataset. If any piece of data in the tree changes, the root hash will also change. Root hashes are present in block headers for most blockchains. Ethereum for example has the`state_root` field in each header. With the state root, we can construct a proof for any data stored on Ethereum, so whenever we write value V to storage in a Solidity smart contract at block H, we can construct a proof to show that from H onwards, that slot contains V. This proof will be valid until we update or delete the value.
 
 ```python
 def prove(state_root, proof, V) -> Boolean

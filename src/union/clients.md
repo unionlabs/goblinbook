@@ -16,6 +16,28 @@ However, the implementation details can vary depending on the execution environm
 We usually refer to both the code and to the instantiation as a client. The best way to grok this, is to see a client
 as both the ERC20 code implementation, and an actual ERC20 coin. There can be many clients on a chain, and new clients can be trustlessly instantiated after the code has been uploaded.
 
+### Why are IBC Clients compared to ERC20?
+
+Because, like an ERC20 contract, the client code is uploaded to the chain once, and then many different instantiations (instances) can be created. Each one follows a different counterpart chain. This provides a very powerful structure in terms of modularity and trustless deployment.
+
+**1.The Difference Between Code and Instance**
+- In ERC20:
+The code for an ERC20 token (for example, a "Token.sol" contract) is deployed onto the chain once. This code defines the token logic: transfer, balance, allowance, etc.
+However, many different tokens can be created from this code—each with a different name, symbol, and supply.
+
+- In IBC Client:
+The code for a client module is loaded onto the chain. This code defines the verification logic: header checking, proof validation, misbehavior detection, etc.
+Many different client instances can be created from this code—each following a different counterpart chain.
+
+**2.State Tracking**
+- ERC20: Each token contract maintains its own user balances and permissions.
+- IBC Client: Each client instance maintains the last verified block height of the counterpart chain, its consensus status, and other parameters.
+  
+**3.Modularity and Trustless Deployment**
+- ERC20 contracts can be deployed permissionlessly. Anyone can create their own token.
+- Similarly, with IBC clients, once the code is deployed, anyone can start a new client instance—for example, to monitor a new chain.
+
+
 ### State Tracking
 
 Clients must maintain a view of their counterparty chain's state. This typically includes:
@@ -66,6 +88,8 @@ When misbehavior is detected, clients can:
 - Implement automatic resolution mechanisms
 
 Just as each ERC20 instance can be frozen independently, each client instance handles misbehavior for its specific counterparty chain relationship.
+
+When misbehavior is detected, the client can automatically "freeze" itself. This stops cross-chain communication and maintains security, much like a security system sounds an alarm and locks the doors.
 
 ## Implementations
 
